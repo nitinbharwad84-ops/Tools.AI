@@ -531,7 +531,7 @@ export default function App() {
               className="flex items-center gap-2 cursor-pointer" 
               onClick={() => setView("dashboard")}
             >
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary/20">N</div>
+              <img src="/logo.svg" alt="Nexus AI Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-primary/20 object-cover" />
               <span className="font-bold tracking-tighter hidden sm:block dark:text-white">Nexus AI</span>
             </div>
             {activeTool && (
@@ -569,7 +569,7 @@ export default function App() {
       <footer className="max-w-7xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-slate-800 mt-20">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-black dark:bg-slate-800 rounded-lg flex items-center justify-center text-white font-bold text-xs">N</div>
+            <img src="/logo.svg" alt="Nexus AI Logo" className="w-8 h-8 rounded-lg shadow-lg object-cover" />
             <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Nexus AI Platform v1.0</span>
           </div>
           <div className="flex items-center gap-12">

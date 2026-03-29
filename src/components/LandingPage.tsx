@@ -13,7 +13,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
       {/* Navigation */}
       <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary/20">N</div>
+          <img src="/logo.svg" alt="Nexus AI Logo" className="w-10 h-10 rounded-xl shadow-lg shadow-primary/20 object-cover" />
           <span className="text-xl font-bold tracking-tighter dark:text-white">Nexus AI</span>
         </div>
         <div className="flex items-center gap-6">
@@ -261,7 +261,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
             <div className="space-y-8">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary/20">N</div>
+                <img src="/logo.svg" alt="Nexus AI Logo" className="w-10 h-10 rounded-xl shadow-lg shadow-primary/20 object-cover" />
                 <span className="text-xl font-bold tracking-tighter dark:text-white">Nexus AI</span>
               </div>
               <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
