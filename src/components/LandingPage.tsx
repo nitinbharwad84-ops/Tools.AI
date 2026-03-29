@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "motion/react";
-import { Sparkles, ArrowRight, Zap, Shield, Globe, Image as ImageIcon, CheckCircle2, Twitter, Linkedin, Instagram, Github, Mail, ExternalLink, FileText, Flame, Type } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, Shield, Globe, Image as ImageIcon, CheckCircle2, Twitter, Linkedin, Instagram, Github, Mail, ExternalLink, FileText, Flame, Type, Video } from "lucide-react";
 import { DarkModeToggle } from "./DarkModeToggle";
 
 interface LandingPageProps {
@@ -57,7 +57,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               transition={{ delay: 0.2 }}
               className="text-xl text-gray-500 dark:text-gray-400 max-w-lg leading-relaxed"
             >
-              Stop switching between tabs. Nexus AI consolidates the world's most advanced generative models into a single, high-performance workspace for creators, developers, and teams.
+              Stop switching between tabs. Nexus AI consolidates the world's most advanced text, image, and video generative models into a single, high-performance workspace for creators, developers, and teams.
             </motion.p>
 
             <motion.div 
@@ -143,14 +143,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Built for the <span className="text-primary italic font-serif">speed</span> of thought.</h2>
             <p className="text-gray-500 dark:text-gray-400 text-lg">Nexus AI isn't just another tool. It's an ecosystem of specialized agents working in harmony to eliminate friction from your creative process.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { icon: Zap, title: "Cut Through Noise", desc: "Our Summarizer uses deep context analysis to distill hours of reading into seconds of insight." },
-              { icon: Flame, title: "Career Edge", desc: "The Resume Roaster provides the brutal honesty you need to stand out in a crowded job market." },
-              { icon: Mail, title: "Diplomatic Immunity", desc: "Email Pacifier rewrites your most frustrated drafts into professional, high-impact messages." },
+              { icon: Video, title: "Multimodal Vision", desc: "Upload videos to extract summaries, ask questions, and perform complex reasoning on visual data." },
               { icon: ImageIcon, title: "Visual Alchemy", desc: "Generate studio-grade assets or edit existing imagery with natural language instructions." },
               { icon: Globe, title: "Omnichannel Growth", desc: "Social Engine crafts cohesive campaigns that maintain your voice across every platform." },
-              { icon: CheckCircle2, title: "Flawless Delivery", desc: "Grammar Fixer goes beyond spelling, optimizing your tone and flow for maximum clarity." }
+              { icon: Flame, title: "Career Edge", desc: "The Resume Roaster provides the brutal honesty you need to stand out in a crowded job market." },
+              { icon: Mail, title: "Diplomatic Immunity", desc: "Email Pacifier rewrites your most frustrated drafts into professional, high-impact messages." },
+              { icon: CheckCircle2, title: "Flawless Delivery", desc: "Grammar Fixer goes beyond spelling, optimizing your tone and flow for maximum clarity." },
+              { icon: Shield, title: "Enterprise Security", desc: "Your data remains yours. Nexus AI processes your information with state-of-the-art privacy controls." }
             ].map((feature, i) => (
               <motion.div 
                 key={i} 
@@ -158,13 +160,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="group space-y-6 p-10 bg-white dark:bg-slate-800 rounded-[40px] border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
+                className="group space-y-6 p-8 bg-white dark:bg-slate-800 rounded-[32px] border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
               >
-                <div className="w-16 h-16 bg-primary/5 group-hover:bg-primary/10 rounded-2xl flex items-center justify-center text-primary transition-colors">
-                  <feature.icon className="w-8 h-8" />
+                <div className="w-14 h-14 bg-primary/5 group-hover:bg-primary/10 rounded-2xl flex items-center justify-center text-primary transition-colors">
+                  <feature.icon className="w-7 h-7" />
                 </div>
-                <h3 className="text-2xl font-bold tracking-tight text-foreground">{feature.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{feature.desc}</p>
+                <h3 className="text-xl font-bold tracking-tight text-foreground">{feature.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -277,7 +279,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             <div>
               <h4 className="font-bold mb-8 uppercase tracking-widest text-xs text-gray-400">Ecosystem</h4>
               <ul className="space-y-4">
-                {["Summarizer", "Resume Roaster", "Email Pacifier", "Image Studio", "Social Engine", "Grammar Fixer"].map((item) => (
+                {["Summarizer", "Resume Roaster", "Email Pacifier", "Image Studio", "Social Engine", "Grammar Fixer", "Video Analyzer"].map((item) => (
                   <li key={item}>
                     <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors">{item}</a>
                   </li>
