@@ -3,6 +3,15 @@ import { GoogleGenAI, GenerateContentResponse, Modality } from "@google/genai";
 const API_KEY = process.env.GEMINI_API_KEY;
 
 export type Tone = "professional" | "witty" | "urgent";
+export type TargetAudience = "general" | "tech" | "business" | "creatives" | "students";
+export type ContentLength = "short" | "medium" | "long";
+export type SummaryFocus = "key-takeaways" | "action-items" | "executive-summary";
+export type RoastIntensity = "mild" | "spicy" | "nuclear";
+export type EmailTone = "polite" | "assertive" | "friendly" | "formal";
+export type WritingStyle = "formal" | "casual" | "academic" | "creative";
+export type Dialect = "US" | "UK";
+export type ImageStyle = "photorealistic" | "digital-art" | "oil-painting" | "sketch" | "3d-render";
+
 export type ImageSize = "1K" | "2K" | "4K";
 export type AspectRatio = "1:1" | "2:3" | "3:2" | "3:4" | "4:3" | "9:16" | "16:9" | "21:9";
 
@@ -24,10 +33,35 @@ export interface GeneratedPost {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY! });
 
-export async function generateSocialContent(idea: string, tone: Tone, platforms: string[]): Promise<PlatformContent[]> {
+export async function generateSocialContent(
+  idea: string, 
+  tone: Tone, 
+  platforms: string[], 
+  targetAudience: TargetAudience,
+  length: ContentLength,
+  includeEmojis: boolean
+): Promise<PlatformContent[]> {
+  const audienceDescriptions: Record<TargetAudience, string> = {
+    general: "a broad, general audience with diverse interests.",
+    tech: "tech-savvy individuals, developers, and early adopters.",
+    business: "professionals, entrepreneurs, and corporate decision-makers.",
+    creatives: "artists, designers, writers, and content creators.",
+    students: "students, educators, and lifelong learners."
+  };
+
+  const lengthDesc = {
+    short: "Keep the content very concise and punchy.",
+    medium: "Provide a balanced length with sufficient detail.",
+    long: "Go into depth and provide comprehensive information."
+  }[length];
+
+  const emojiInstruction = includeEmojis 
+    ? "Use relevant emojis throughout the content to make it engaging." 
+    : "Do NOT use any emojis in the content.";
+
   const platformGuidelines = platforms.map(p => {
-    if (p === "LinkedIn") return "- LinkedIn: Long-form, professional, insightful. Include a dedicated \"Hashtags\" section at the end with 5-10 relevant professional hashtags. (Aspect Ratio: 16:9)";
-    if (p === "Twitter/X") return "- Twitter/X: Short, punchy, engaging. Integrate 2-3 trending hashtags within or at the end of the text. (Aspect Ratio: 16:9)";
+    if (p === "LinkedIn") return "- LinkedIn: Professional, insightful. Include a dedicated \"Hashtags\" section at the end with 5-10 relevant professional hashtags. (Aspect Ratio: 16:9)";
+    if (p === "Twitter/X") return "- Twitter/X: Engaging. Integrate 2-3 trending hashtags within or at the end of the text. (Aspect Ratio: 16:9)";
     if (p === "Instagram") return "- Instagram: Visual-focused caption, engaging. Include a dedicated \"Hashtags\" section at the end with 15-30 relevant and trending hashtags. (Aspect Ratio: 1:1)";
     return `- ${p}: Create engaging content suitable for this platform.`;
   }).join("\n    ");
@@ -35,13 +69,16 @@ export async function generateSocialContent(idea: string, tone: Tone, platforms:
   const prompt = `
     Create social media content for the following idea: "${idea}"
     The desired tone is: ${tone}.
+    The target audience is: ${audienceDescriptions[targetAudience]}.
+    Content length: ${lengthDesc}
+    ${emojiInstruction}
     
     Generate content ONLY for the following platforms: ${platforms.join(", ")}.
     
     For each selected platform, follow these specific guidelines:
     ${platformGuidelines}
     
-    For each platform, also provide a descriptive image prompt that would work well for that platform's audience.
+    For each platform, also provide a descriptive image prompt that would work well for that platform's audience and the specified target audience.
     
     Use Google Search to find current trends, accurate data, and relevant context for the content.
     
@@ -73,18 +110,46 @@ export async function generateSocialContent(idea: string, tone: Tone, platforms:
   }
 }
 
-export async function regenerateSinglePost(idea: string, tone: Tone, platform: string): Promise<PlatformContent> {
+export async function regenerateSinglePost(
+  idea: string, 
+  tone: Tone, 
+  platform: string, 
+  targetAudience: TargetAudience,
+  length: ContentLength,
+  includeEmojis: boolean
+): Promise<PlatformContent> {
+  const audienceDescriptions: Record<TargetAudience, string> = {
+    general: "a broad, general audience with diverse interests.",
+    tech: "tech-savvy individuals, developers, and early adopters.",
+    business: "professionals, entrepreneurs, and corporate decision-makers.",
+    creatives: "artists, designers, writers, and content creators.",
+    students: "students, educators, and lifelong learners."
+  };
+
+  const lengthDesc = {
+    short: "Keep the content very concise and punchy.",
+    medium: "Provide a balanced length with sufficient detail.",
+    long: "Go into depth and provide comprehensive information."
+  }[length];
+
+  const emojiInstruction = includeEmojis 
+    ? "Use relevant emojis throughout the content to make it engaging." 
+    : "Do NOT use any emojis in the content.";
+
   const prompt = `
     Regenerate social media content for the following idea: "${idea}"
     The desired tone is: ${tone}.
+    The target audience is: ${audienceDescriptions[targetAudience]}.
+    Content length: ${lengthDesc}
+    ${emojiInstruction}
     Target platform: ${platform}.
     
     Guidelines for ${platform}:
-    ${platform === "LinkedIn" ? "- LinkedIn: Long-form, professional, insightful. Include a dedicated \"Hashtags\" section at the end with 5-10 relevant professional hashtags. (Aspect Ratio: 16:9)" : ""}
-    ${platform === "Twitter/X" ? "- Twitter/X: Short, punchy, engaging. Integrate 2-3 trending hashtags within or at the end of the text. (Aspect Ratio: 16:9)" : ""}
+    ${platform === "LinkedIn" ? "- LinkedIn: Professional, insightful. Include a dedicated \"Hashtags\" section at the end with 5-10 relevant professional hashtags. (Aspect Ratio: 16:9)" : ""}
+    ${platform === "Twitter/X" ? "- Twitter/X: Engaging. Integrate 2-3 trending hashtags within or at the end of the text. (Aspect Ratio: 16:9)" : ""}
     ${platform === "Instagram" ? "- Instagram: Visual-focused caption, engaging. Include a dedicated \"Hashtags\" section at the end with 15-30 relevant and trending hashtags. (Aspect Ratio: 1:1)" : ""}
     
-    Also provide a descriptive image prompt that would work well for ${platform}'s audience.
+    Also provide a descriptive image prompt that would work well for ${platform}'s audience and the specified target audience.
     
     Use Google Search to find current trends and accurate data for this specific post.
     
@@ -114,15 +179,16 @@ export async function regenerateSinglePost(idea: string, tone: Tone, platform: s
   }
 }
 
-export async function generateImage(prompt: string, aspectRatio: AspectRatio, size: ImageSize): Promise<string> {
-  // Create a new instance right before making the call to get the latest API key
+export async function generateImage(prompt: string, aspectRatio: AspectRatio, size: ImageSize, style?: ImageStyle): Promise<string> {
   const currentApiKey = (typeof process !== "undefined" && process.env.API_KEY) || API_KEY;
   const imageAi = new GoogleGenAI({ apiKey: currentApiKey! });
   
+  const styledPrompt = style ? `A ${style} of: ${prompt}` : prompt;
+
   try {
     const response = await imageAi.models.generateContent({
       model: "gemini-2.5-flash-image",
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      contents: [{ role: "user", parts: [{ text: styledPrompt }] }],
       config: {
         imageConfig: {
           aspectRatio,
@@ -136,8 +202,6 @@ export async function generateImage(prompt: string, aspectRatio: AspectRatio, si
       }
     }
   } catch (error: any) {
-    // If the request fails with "Requested entity was not found" or "PERMISSION_DENIED",
-    // it likely means the selected API key is invalid or doesn't have access to this model.
     const errorMessage = error.message || "";
     if (
       errorMessage.includes("Requested entity was not found") || 
@@ -145,7 +209,6 @@ export async function generateImage(prompt: string, aspectRatio: AspectRatio, si
       errorMessage.includes("403") ||
       errorMessage.includes("not authorized")
     ) {
-      // Reset key selection and prompt user
       await checkApiKey(true);
     }
     throw error;
@@ -203,6 +266,107 @@ export async function editImage(base64Image: string, editPrompt: string, aspectR
   }
 
   throw new Error("No image data returned from the model.");
+}
+
+export async function summarizeContent(
+  content: string, 
+  type: "text" | "file" | "url",
+  length: ContentLength,
+  focus: SummaryFocus,
+  tone: WritingStyle
+): Promise<string> {
+  const focusDesc = {
+    "key-takeaways": "Focus on the most important points and insights.",
+    "action-items": "Focus on extracting actionable steps and tasks.",
+    "executive-summary": "Provide a high-level overview suitable for busy executives."
+  }[focus];
+
+  const prompt = `
+    Summarize the following ${type} content. 
+    Summary Length: ${length}.
+    Focus Area: ${focusDesc}
+    Tone: ${tone}.
+    
+    Provide a clean, structured summary.
+    
+    Content:
+    ${content}
+  `;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+  });
+
+  return response.text || "Failed to generate summary.";
+}
+
+export async function roastResume(resumeText: string, intensity: RoastIntensity): Promise<string> {
+  const intensityDesc = {
+    mild: "A gentle, playful roast. Be funny but kind.",
+    spicy: "A sharp, witty roast. Don't hold back too much.",
+    nuclear: "A brutal, no-holds-barred roast. Be as savage as possible."
+  }[intensity];
+
+  const prompt = `
+    You are a resume roaster. 
+    Roast Intensity: ${intensityDesc}
+    
+    Roast the following resume content in a funny but sharp way. 
+    Be creative and use humor. 
+    
+    At the end of the roast, provide 3-5 actionable and serious improvement tips.
+    
+    Resume Content:
+    ${resumeText}
+  `;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+  });
+
+  return response.text || "Failed to roast resume.";
+}
+
+export async function pacifyEmail(emailText: string, tone: EmailTone, length: ContentLength): Promise<string> {
+  const prompt = `
+    The following email is angry, rude, or passive-aggressive. 
+    Rewrite it to be ${tone} and polished while preserving the original intent. 
+    Length: ${length}.
+    Remove all negativity and make it sound professional.
+    
+    Original Email:
+    ${emailText}
+  `;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+  });
+
+  return response.text || "Failed to pacify email.";
+}
+
+export async function fixGrammar(text: string, style: WritingStyle, dialect: Dialect): Promise<string> {
+  const prompt = `
+    Fix the grammar, spelling, and punctuation of the following text. 
+    Writing Style: ${style}.
+    English Dialect: ${dialect === "US" ? "American English" : "British English"}.
+    
+    Make it flow better while keeping the original meaning intact. 
+    Only return the corrected text.
+    
+    Text:
+    ${text}
+  `;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+  });
+
+  return response.text || "Failed to fix grammar.";
 }
 
 export async function checkApiKey(force = false) {

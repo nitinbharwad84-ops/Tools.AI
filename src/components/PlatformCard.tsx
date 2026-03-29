@@ -106,7 +106,7 @@ export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, 
             <span className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-slate-500">{post.platform}</span>
           </div>
           <div className="flex items-center gap-1">
-            <Tooltip text="Regenerate Entire Post">
+            <Tooltip text="Generate a completely new post and image for this platform">
               <button
                 onClick={onRegeneratePost}
                 disabled={post.loading}
@@ -115,7 +115,7 @@ export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, 
                 <RefreshCw className={cn("w-4 h-4 text-gray-400 dark:text-slate-500", post.loading && "animate-spin")} />
               </button>
             </Tooltip>
-            <Tooltip text={copied ? "Copied!" : "Copy Text"}>
+            <Tooltip text={copied ? "Copied to clipboard!" : "Copy the post text to your clipboard"}>
               <button
                 onClick={handleCopy}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
@@ -123,7 +123,7 @@ export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, 
                 {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-400 dark:text-slate-500" />}
               </button>
             </Tooltip>
-            <Tooltip text="Share Post">
+            <Tooltip text="Share this post using your device's native share menu">
               <button
                 onClick={handleShare}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors"
@@ -180,7 +180,7 @@ export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, 
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                <Tooltip text="Download Image" position="bottom">
+                <Tooltip text="Download this generated image to your device" position="bottom">
                   <button
                     onClick={handleDownload}
                     className="p-3 bg-white rounded-full text-slate-900 hover:scale-110 transition-transform shadow-lg"
@@ -188,7 +188,7 @@ export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, 
                     <Download className="w-5 h-5" />
                   </button>
                 </Tooltip>
-                <Tooltip text="Regenerate Image Only" position="bottom">
+                <Tooltip text="Generate a new image while keeping the current text" position="bottom">
                   <button
                     onClick={onRegenerateImage}
                     className="p-3 bg-white rounded-full text-slate-900 hover:scale-110 transition-transform shadow-lg"
@@ -219,19 +219,21 @@ export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, 
                 className="flex-1 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all dark:text-white dark:placeholder-slate-600"
                 onKeyDown={(e) => e.key === "Enter" && handleEditImage()}
               />
-              <button
-                onClick={handleEditImage}
-                disabled={isEditing || !editPrompt.trim()}
-                className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {isEditing ? <Loader2 className="w-3 h-3 animate-spin" /> : "Edit"}
-              </button>
+              <Tooltip text="Apply your text instructions to modify the existing image">
+                <button
+                  onClick={handleEditImage}
+                  disabled={isEditing || !editPrompt.trim()}
+                  className="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isEditing ? <Loader2 className="w-3 h-3 animate-spin" /> : "Edit"}
+                </button>
+              </Tooltip>
             </div>
           </div>
         )}
 
         <div className="mt-6">
-          <Tooltip text={copied ? "Success!" : "Copy full post text"}>
+          <Tooltip text={copied ? "Successfully copied!" : "Copy the finalized post text to your clipboard"}>
             <button
               onClick={handleCopy}
               disabled={post.loading || !post.text}
