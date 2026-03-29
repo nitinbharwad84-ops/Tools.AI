@@ -7,10 +7,11 @@ import {
   Mail, 
   Image as ImageIcon, 
   Type,
+  Video,
   ArrowRight
 } from "lucide-react";
 
-export type ToolId = "social-gen" | "summarizer" | "resume-roaster" | "email-pacifier" | "image-gen" | "grammar-fixer";
+export type ToolId = "social-gen" | "summarizer" | "resume-roaster" | "email-pacifier" | "image-gen" | "grammar-fixer" | "video-analyzer";
 
 interface Tool {
   id: ToolId;
@@ -62,6 +63,13 @@ const tools: Tool[] = [
     description: "Instantly fix grammar, spelling, and flow while keeping your original meaning.",
     icon: Type,
     color: "bg-rose-500"
+  },
+  {
+    id: "video-analyzer",
+    name: "Video Analyzer",
+    description: "Upload videos to summarize, ask questions, identify actions, and perform complex reasoning.",
+    icon: Video,
+    color: "bg-cyan-500"
   }
 ];
 

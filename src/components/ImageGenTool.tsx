@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
-import { Image as ImageIcon, Loader2, AlertCircle, Download, Upload, Type } from "lucide-react";
-import { generateImage, editImage, AspectRatio, ImageSize, ImageStyle } from "../services/geminiService";
+import { Image as ImageIcon, Loader2, AlertCircle, Download, Upload, Type, Sparkles } from "lucide-react";
+import { generateImage, editImage, AspectRatio, ImageSize, ImageStyle, enhanceImagePrompt } from "../services/geminiService";
 import { useDropzone } from "react-dropzone";
 import { cn } from "../lib/utils";
 
@@ -27,6 +27,8 @@ export const ImageGenTool: React.FC = () => {
   const [error, setError] = useState("");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [style, setStyle] = useState<ImageStyle>("photorealistic");
+  const [isEnhancingPrompt, setIsEnhancingPrompt] = useState(false);
+  const [isEnhancingEditPrompt, setIsEnhancingEditPrompt] = useState(false);
 
   const onDrop = (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -89,6 +91,32 @@ export const ImageGenTool: React.FC = () => {
     }
   };
 
+  const handleEnhanceMainPrompt = async () => {
+    if (!prompt.trim()) return;
+    setIsEnhancingPrompt(true);
+    try {
+      const enhanced = await enhanceImagePrompt(prompt);
+      setPrompt(enhanced);
+    } catch (err) {
+      console.error("Failed to enhance prompt", err);
+    } finally {
+      setIsEnhancingPrompt(false);
+    }
+  };
+
+  const handleEnhanceEditPrompt = async () => {
+    if (!editPrompt.trim()) return;
+    setIsEnhancingEditPrompt(true);
+    try {
+      const enhanced = await enhanceImagePrompt(editPrompt);
+      setEditPrompt(enhanced);
+    } catch (err) {
+      console.error("Failed to enhance prompt", err);
+    } finally {
+      setIsEnhancingEditPrompt(false);
+    }
+  };
+
   const handleDownload = () => {
     if (!resultImage) return;
     const link = document.createElement("a");
@@ -124,13 +152,24 @@ export const ImageGenTool: React.FC = () => {
 
         <div className="space-y-6">
           {mode === "generate" ? (
-            <div className="space-y-4">
+            <div className="space-y-4 relative">
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe the image you want to generate..."
-                className="w-full h-32 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-3xl p-6 text-lg focus:outline-none focus:ring-4 focus:ring-purple-500/5 focus:border-purple-500 transition-all dark:text-white"
+                className="w-full h-32 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-3xl p-6 pr-14 text-lg focus:outline-none focus:ring-4 focus:ring-purple-500/5 focus:border-purple-500 transition-all dark:text-white resize-none"
               />
+              <div className="absolute bottom-4 right-4">
+                <Tooltip text="Enhance Prompt">
+                  <button
+                    onClick={handleEnhanceMainPrompt}
+                    disabled={isEnhancingPrompt || !prompt.trim()}
+                    className="p-2 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-500/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isEnhancingPrompt ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                  </button>
+                </Tooltip>
+              </div>
             </div>
           ) : (
             <div className="space-y-6">
@@ -160,12 +199,25 @@ export const ImageGenTool: React.FC = () => {
                   </div>
                 )}
               </div>
-              <textarea
-                value={editPrompt}
-                onChange={(e) => setEditPrompt(e.target.value)}
-                placeholder="Describe how you want to edit the image (e.g., 'Make it more vibrant', 'Add a cat')..."
-                className="w-full h-32 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-3xl p-6 text-lg focus:outline-none focus:ring-4 focus:ring-purple-500/5 focus:border-purple-500 transition-all dark:text-white"
-              />
+              <div className="relative">
+                <textarea
+                  value={editPrompt}
+                  onChange={(e) => setEditPrompt(e.target.value)}
+                  placeholder="Describe how you want to edit the image (e.g., 'Make it more vibrant', 'Add a cat')..."
+                  className="w-full h-32 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-3xl p-6 pr-14 text-lg focus:outline-none focus:ring-4 focus:ring-purple-500/5 focus:border-purple-500 transition-all dark:text-white resize-none"
+                />
+                <div className="absolute bottom-4 right-4">
+                  <Tooltip text="Enhance Prompt">
+                    <button
+                      onClick={handleEnhanceEditPrompt}
+                      disabled={isEnhancingEditPrompt || !editPrompt.trim()}
+                      className="p-2 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-500/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isEnhancingEditPrompt ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                    </button>
+                  </Tooltip>
+                </div>
+              </div>
             </div>
           )}
 

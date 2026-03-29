@@ -28,6 +28,7 @@ import { ResumeRoasterTool } from "./components/ResumeRoasterTool";
 import { EmailPacifierTool } from "./components/EmailPacifierTool";
 import { ImageGenTool } from "./components/ImageGenTool";
 import { GrammarFixerTool } from "./components/GrammarFixerTool";
+import { VideoAnalyzerTool } from "./components/VideoAnalyzerTool";
 import { cn } from "./lib/utils";
 
 export default function App() {
@@ -500,6 +501,8 @@ export default function App() {
         return <ImageGenTool />;
       case "grammar-fixer":
         return <GrammarFixerTool />;
+      case "video-analyzer":
+        return <VideoAnalyzerTool />;
       default:
         return null;
     }

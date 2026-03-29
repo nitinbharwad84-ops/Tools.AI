@@ -179,6 +179,24 @@ export async function regenerateSinglePost(
   }
 }
 
+export async function enhanceImagePrompt(prompt: string): Promise<string> {
+  const promptText = `
+    You are an expert AI image generation prompt engineer. 
+    Take the following basic prompt and enhance it into a highly detailed, descriptive, and visually rich prompt suitable for a text-to-image model. 
+    Focus on lighting, composition, mood, and specific details. 
+    Do not add any conversational text, just return the enhanced prompt.
+
+    Basic prompt: ${prompt}
+  `;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: [{ role: "user", parts: [{ text: promptText }] }],
+  });
+
+  return response.text?.trim() || prompt;
+}
+
 export async function generateImage(prompt: string, aspectRatio: AspectRatio, size: ImageSize, style?: ImageStyle): Promise<string> {
   const currentApiKey = (typeof process !== "undefined" && process.env.API_KEY) || API_KEY;
   const imageAi = new GoogleGenAI({ apiKey: currentApiKey! });
@@ -367,6 +385,43 @@ export async function fixGrammar(text: string, style: WritingStyle, dialect: Dia
   });
 
   return response.text || "Failed to fix grammar.";
+}
+
+export async function analyzeVideo(
+  videoBase64: string,
+  mimeType: string,
+  tab: "summarization" | "qna" | "action" | "reasoning",
+  promptText: string,
+  options: any
+): Promise<string> {
+  const currentApiKey = (typeof process !== "undefined" && process.env.API_KEY) || API_KEY;
+  const videoAi = new GoogleGenAI({ apiKey: currentApiKey! });
+
+  let finalPrompt = "";
+  if (tab === "summarization") {
+    finalPrompt = `Summarize this video. Length: ${options.length}. Focus: ${options.focus}.`;
+  } else if (tab === "qna") {
+    finalPrompt = `Answer this question based on the video: ${promptText}. Detail level: ${options.detailLevel}.`;
+  } else if (tab === "action") {
+    finalPrompt = `Identify actions and provide timestamps for events in this video. Granularity: ${options.granularity}.`;
+  } else if (tab === "reasoning") {
+    finalPrompt = `Perform complex reasoning on this video based on the following context/prompt: ${promptText}. Reasoning depth: ${options.depth}.`;
+  }
+
+  const response = await videoAi.models.generateContent({
+    model: "gemini-3.1-flash-lite-preview",
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { inlineData: { data: videoBase64, mimeType } },
+          { text: finalPrompt }
+        ]
+      }
+    ]
+  });
+
+  return response.text || "Failed to analyze video.";
 }
 
 export async function checkApiKey(force = false) {
