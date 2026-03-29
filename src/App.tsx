@@ -515,7 +515,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-white transition-colors duration-300">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-slate-800 px-6 py-4">
+      <nav className="sticky top-0 z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border-b border-gray-200/50 dark:border-slate-800/50 px-6 py-4 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
             {view === "tool" && (
@@ -528,11 +528,11 @@ export default function App() {
               </button>
             )}
             <div 
-              className="flex items-center gap-2 cursor-pointer" 
-              onClick={() => setView("dashboard")}
+              className="flex items-center gap-3 cursor-pointer group" 
+              onClick={() => setView("landing")}
             >
-              <img src="/logo.svg" alt="Nexus AI Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-primary/20 object-cover" />
-              <span className="font-bold tracking-tighter hidden sm:block dark:text-white">Nexus AI</span>
+              <img src="/logo.svg" alt="Nexus AI Logo" className="w-8 h-8 rounded-lg shadow-md shadow-primary/20 object-cover group-hover:scale-105 transition-transform duration-300" />
+              <span className="font-bold tracking-tighter hidden sm:block dark:text-white group-hover:text-primary transition-colors duration-300">Nexus AI</span>
             </div>
             {activeTool && (
               <div className="hidden md:flex items-center gap-2 ml-4 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full">
@@ -566,20 +566,24 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-slate-800 mt-20">
+      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-100 dark:border-slate-800 mt-20">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-4">
-            <img src="/logo.svg" alt="Nexus AI Logo" className="w-8 h-8 rounded-lg shadow-lg object-cover" />
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Nexus AI Platform v1.0</span>
+          <div className="flex items-center gap-3">
+            <img src="/logo.svg" alt="Nexus AI Logo" className="w-6 h-6 rounded-md shadow-sm object-cover grayscale opacity-70" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Nexus AI Platform v1.0</span>
           </div>
-          <div className="flex items-center gap-12">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-300">Intelligence</span>
-              <span className="text-xs font-bold text-gray-900 dark:text-gray-100">Gemini 3.1 Pro</span>
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+            <div className="flex flex-col items-center md:items-end">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Text & Logic</span>
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Gemini 3.1 Pro</span>
             </div>
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-300">Visuals</span>
-              <span className="text-xs font-bold text-gray-900 dark:text-gray-100">Gemini 2.5 Flash Image</span>
+            <div className="flex flex-col items-center md:items-end">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Visuals</span>
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Gemini 2.5 Flash Image</span>
+            </div>
+            <div className="flex flex-col items-center md:items-end">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Video</span>
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Gemini 3.1 Flash Lite</span>
             </div>
           </div>
         </div>

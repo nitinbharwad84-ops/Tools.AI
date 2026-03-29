@@ -143,7 +143,7 @@ export const GrammarFixerTool: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
+          <div className="whitespace-pre-wrap font-sans text-gray-800 dark:text-gray-200 leading-relaxed text-base">
             {fixed}
           </div>
         </motion.div>

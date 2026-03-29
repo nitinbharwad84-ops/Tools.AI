@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { GeneratedPost } from "../services/geminiService";
 import { motion } from "motion/react";
-import { Loader2, AlertCircle, Copy, Check, Linkedin, Twitter, Instagram, Download, Share2, RefreshCw } from "lucide-react";
+import { Loader2, AlertCircle, Copy, Check, Linkedin, Twitter, Instagram, Download, Share2, RefreshCw, Edit3, Eye } from "lucide-react";
 import { cn } from "../lib/utils";
 
 interface PlatformCardProps {
@@ -45,9 +45,10 @@ const Tooltip = ({ children, text, position = "top" }: { children: React.ReactNo
 );
 
 export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, onRegenerateImage, onRegeneratePost, onEditImage }) => {
-  const [copied, setCopied] = React.useState(false);
-  const [editPrompt, setEditPrompt] = React.useState("");
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [copied, setCopied] = useState(false);
+  const [editPrompt, setEditPrompt] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingText, setIsEditingText] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(post.text);
@@ -106,6 +107,15 @@ export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, 
             <span className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-slate-500">{post.platform}</span>
           </div>
           <div className="flex items-center gap-1">
+            <Tooltip text={isEditingText ? "Preview Post" : "Edit Post"}>
+              <button
+                onClick={() => setIsEditingText(!isEditingText)}
+                disabled={post.loading}
+                className={cn("p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors disabled:opacity-50", isEditingText && "bg-gray-100 dark:bg-slate-800")}
+              >
+                {isEditingText ? <Eye className="w-4 h-4 text-primary" /> : <Edit3 className="w-4 h-4 text-gray-400 dark:text-slate-500" />}
+              </button>
+            </Tooltip>
             <Tooltip text="Generate a completely new post and image for this platform">
               <button
                 onClick={onRegeneratePost}
@@ -134,20 +144,24 @@ export const PlatformCard: React.FC<PlatformCardProps> = ({ post, onUpdateText, 
           </div>
         </div>
 
-        <div className="mb-6 flex-1">
+        <div className="mb-6 flex-1 overflow-y-auto min-h-[150px]">
           {post.loading && !post.text ? (
             <div className="space-y-3">
               <div className="h-4 bg-gray-100 dark:bg-slate-800 rounded-lg w-full animate-pulse" />
               <div className="h-4 bg-gray-100 dark:bg-slate-800 rounded-lg w-5/6 animate-pulse" />
               <div className="h-4 bg-gray-100 dark:bg-slate-800 rounded-lg w-4/6 animate-pulse" />
             </div>
-          ) : (
+          ) : isEditingText ? (
             <textarea
               value={post.text}
               onChange={(e) => onUpdateText?.(e.target.value)}
               className="w-full h-full min-h-[150px] text-gray-800 dark:text-gray-200 text-sm leading-relaxed bg-transparent border-none focus:ring-0 resize-none p-0 scrollbar-hide"
               placeholder="Edit your post content here..."
             />
+          ) : (
+            <div className="whitespace-pre-wrap font-sans text-gray-800 dark:text-gray-200 leading-relaxed text-sm">
+              {post.text}
+            </div>
           )}
         </div>
 

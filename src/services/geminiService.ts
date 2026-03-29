@@ -33,6 +33,9 @@ export interface GeneratedPost {
 
 const ai = new GoogleGenAI({ apiKey: API_KEY! });
 
+const PLAIN_TEXT_INSTRUCTION = `
+IMPORTANT: Format your response as plain text. Do NOT use any Markdown formatting (no asterisks, no hashes, no underscores). Use standard unicode characters for bullets (•) and proper line breaks for spacing. Ensure the text is ready to be copied and pasted directly without any markdown symbols.`;
+
 export async function generateSocialContent(
   idea: string, 
   tone: Tone, 
@@ -81,6 +84,7 @@ export async function generateSocialContent(
     For each platform, also provide a descriptive image prompt that would work well for that platform's audience and the specified target audience.
     
     Use Google Search to find current trends, accurate data, and relevant context for the content.
+    ${PLAIN_TEXT_INSTRUCTION}
     
     Return the response as a JSON array of objects with the following structure:
     [
@@ -152,6 +156,7 @@ export async function regenerateSinglePost(
     Also provide a descriptive image prompt that would work well for ${platform}'s audience and the specified target audience.
     
     Use Google Search to find current trends and accurate data for this specific post.
+    ${PLAIN_TEXT_INSTRUCTION}
     
     Return the response as a JSON object with the following structure:
     {
@@ -306,6 +311,7 @@ export async function summarizeContent(
     Tone: ${tone}.
     
     Provide a clean, structured summary.
+    ${PLAIN_TEXT_INSTRUCTION}
     
     Content:
     ${content}
@@ -334,6 +340,7 @@ export async function roastResume(resumeText: string, intensity: RoastIntensity)
     Be creative and use humor. 
     
     At the end of the roast, provide 3-5 actionable and serious improvement tips.
+    ${PLAIN_TEXT_INSTRUCTION}
     
     Resume Content:
     ${resumeText}
@@ -353,6 +360,7 @@ export async function pacifyEmail(emailText: string, tone: EmailTone, length: Co
     Rewrite it to be ${tone} and polished while preserving the original intent. 
     Length: ${length}.
     Remove all negativity and make it sound professional.
+    ${PLAIN_TEXT_INSTRUCTION}
     
     Original Email:
     ${emailText}
@@ -374,6 +382,7 @@ export async function fixGrammar(text: string, style: WritingStyle, dialect: Dia
     
     Make it flow better while keeping the original meaning intact. 
     Only return the corrected text.
+    ${PLAIN_TEXT_INSTRUCTION}
     
     Text:
     ${text}
@@ -407,6 +416,8 @@ export async function analyzeVideo(
   } else if (tab === "reasoning") {
     finalPrompt = `Perform complex reasoning on this video based on the following context/prompt: ${promptText}. Reasoning depth: ${options.depth}.`;
   }
+
+  finalPrompt += PLAIN_TEXT_INSTRUCTION;
 
   const response = await videoAi.models.generateContent({
     model: "gemini-2.5-flash-lite",

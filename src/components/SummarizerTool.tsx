@@ -4,7 +4,6 @@ import { FileText, Link as LinkIcon, Type, Loader2, AlertCircle, Copy, Check, Do
 import { summarizeContent, ContentLength, SummaryFocus, WritingStyle } from "../services/geminiService";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
-import Markdown from "react-markdown";
 import { parseFile } from "../lib/fileParser";
 import { cn } from "../lib/utils";
 
@@ -296,8 +295,8 @@ export const SummarizerTool: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-            <Markdown>{summary}</Markdown>
+          <div className="whitespace-pre-wrap font-sans text-gray-800 dark:text-gray-200 leading-relaxed text-base">
+            {summary}
           </div>
         </motion.div>
       )}

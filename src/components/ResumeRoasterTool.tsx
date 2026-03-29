@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import { FileText, Type, Loader2, AlertCircle, Copy, Check, Flame } from "lucide-react";
 import { roastResume, RoastIntensity } from "../services/geminiService";
 import { useDropzone } from "react-dropzone";
-import Markdown from "react-markdown";
 import { parseFile } from "../lib/fileParser";
 import { cn } from "../lib/utils";
 
@@ -202,8 +201,8 @@ export const ResumeRoasterTool: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-            <Markdown>{roast}</Markdown>
+          <div className="whitespace-pre-wrap font-sans text-gray-800 dark:text-gray-200 leading-relaxed text-base">
+            {roast}
           </div>
         </motion.div>
       )}

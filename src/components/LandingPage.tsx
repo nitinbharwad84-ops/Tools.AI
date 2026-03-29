@@ -11,24 +11,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-hidden transition-colors duration-300">
       {/* Navigation */}
-      <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-10">
-        <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="Nexus AI Logo" className="w-10 h-10 rounded-xl shadow-lg shadow-primary/20 object-cover" />
-          <span className="text-xl font-bold tracking-tighter dark:text-white">Nexus AI</span>
-        </div>
-        <div className="flex items-center gap-6">
-          <DarkModeToggle />
-          <button 
-            onClick={onStart}
-            className="hidden md:flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:opacity-70 transition-opacity dark:text-white"
-          >
-            Launch App <ArrowRight className="w-4 h-4" />
-          </button>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border-b border-gray-200/50 dark:border-slate-800/50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <img src="/logo.svg" alt="Nexus AI Logo" className="w-10 h-10 rounded-xl shadow-md shadow-primary/20 object-cover group-hover:scale-105 transition-transform duration-300" />
+            <span className="text-xl font-bold tracking-tighter dark:text-white group-hover:text-primary transition-colors duration-300">Nexus AI</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <DarkModeToggle />
+            <button 
+              onClick={onStart}
+              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold uppercase tracking-widest rounded-full hover:bg-primary-dark hover:scale-105 transition-all shadow-lg shadow-primary/25"
+            >
+              Launch App <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <main className="relative pt-20 pb-32 px-6">
+      <main className="relative pt-32 pb-32 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-10 relative z-10">
             <motion.div
@@ -44,11 +46,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-7xl md:text-9xl font-bold tracking-tighter leading-[0.85] text-foreground"
+              className="text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] text-foreground"
             >
-              The Unified<br />
-              <span className="text-primary italic font-serif font-light">Intelligence</span><br />
-              Layer.
+              Your Unified<br />
+              <span className="text-primary italic font-serif font-light">AI Workspace.</span>
             </motion.h1>
 
             <motion.p 
@@ -57,7 +58,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               transition={{ delay: 0.2 }}
               className="text-xl text-gray-500 dark:text-gray-400 max-w-lg leading-relaxed"
             >
-              Stop switching between tabs. Nexus AI consolidates the world's most advanced text, image, and video generative models into a single, high-performance workspace for creators, developers, and teams.
+              Replace your scattered AI tools with one seamless platform. Nexus AI brings the world's most powerful text, image, and video models together so you can create faster and work smarter.
             </motion.p>
 
             <motion.div 
@@ -68,12 +69,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             >
               <button
                 onClick={onStart}
-                className="px-10 py-5 bg-primary text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl shadow-primary/20"
+                className="px-10 py-5 bg-gradient-to-r from-primary to-indigo-500 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_40px_-10px_rgba(79,70,229,0.5)] hover:shadow-[0_0_60px_-15px_rgba(79,70,229,0.7)]"
               >
-                Get Started for Free <ArrowRight className="w-5 h-5" />
+                Start Creating Now <ArrowRight className="w-5 h-5" />
               </button>
               <button className="px-10 py-5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-foreground rounded-2xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
-                Explore Tools
+                Explore Platform
               </button>
             </motion.div>
 
@@ -105,7 +106,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               className="relative z-10 w-full max-w-md aspect-[3/4] bg-slate-900 rounded-[40px] overflow-hidden shadow-[0_50px_100px_-20px_rgba(99,102,241,0.3)] border border-white/10"
             >
               <img 
-                src="https://picsum.photos/seed/nexus-dashboard/800/1200" 
+                src="https://picsum.photos/seed/cyber-interface/800/1200" 
                 alt="App Preview" 
                 className="w-full h-full object-cover opacity-80"
                 referrerPolicy="no-referrer"
@@ -256,30 +257,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-950 border-t border-gray-100 dark:border-slate-900 pt-24 pb-12 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
-            <div className="space-y-8">
-              <div className="flex items-center gap-2">
-                <img src="/logo.svg" alt="Nexus AI Logo" className="w-10 h-10 rounded-xl shadow-lg shadow-primary/20 object-cover" />
+      <footer className="bg-slate-50 dark:bg-slate-950 border-t border-gray-200 dark:border-slate-900 pt-20 pb-10 px-6 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+            <div className="lg:col-span-4 space-y-6">
+              <div className="flex items-center gap-3">
+                <img src="/logo.svg" alt="Nexus AI Logo" className="w-8 h-8 rounded-xl shadow-md object-cover" />
                 <span className="text-xl font-bold tracking-tighter dark:text-white">Nexus AI</span>
               </div>
-              <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm">
                 The unified intelligence layer for modern teams. Consolidating the world's most powerful AI tools into a single, high-performance workspace.
               </p>
-              <div className="flex gap-4">
-                {[Twitter, Linkedin, Instagram, Github].map((Icon, i) => (
-                  <a key={i} href="#" className="w-10 h-10 rounded-full border border-gray-100 dark:border-slate-800 flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary transition-all">
-                    <Icon className="w-5 h-5" />
+              <div className="flex gap-3 pt-2">
+                {[Twitter, Linkedin, Github].map((Icon, i) => (
+                  <a key={i} href="#" className="w-9 h-9 rounded-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 flex items-center justify-center text-gray-500 hover:text-primary hover:border-primary hover:shadow-sm transition-all">
+                    <Icon className="w-4 h-4" />
                   </a>
                 ))}
               </div>
             </div>
 
-            <div>
-              <h4 className="font-bold mb-8 uppercase tracking-widest text-xs text-gray-400">Ecosystem</h4>
-              <ul className="space-y-4">
-                {["Summarizer", "Resume Roaster", "Email Pacifier", "Image Studio", "Social Engine", "Grammar Fixer", "Video Analyzer"].map((item) => (
+            <div className="lg:col-span-2 lg:col-start-6">
+              <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-gray-900 dark:text-gray-100">Platform</h4>
+              <ul className="space-y-3 text-sm">
+                {["Video Analyzer", "Image Studio", "Social Engine", "Text Summarizer", "Resume Roaster"].map((item) => (
                   <li key={item}>
                     <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors">{item}</a>
                   </li>
@@ -287,10 +289,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               </ul>
             </div>
 
-            <div>
-              <h4 className="font-bold mb-8 uppercase tracking-widest text-xs text-gray-400">Resources</h4>
-              <ul className="space-y-4">
-                {["Documentation", "API Reference", "Community", "Support"].map((item) => (
+            <div className="lg:col-span-2">
+              <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-gray-900 dark:text-gray-100">Resources</h4>
+              <ul className="space-y-3 text-sm">
+                {["Documentation", "API Reference", "Community", "Help Center"].map((item) => (
                   <li key={item}>
                     <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors">{item}</a>
                   </li>
@@ -298,30 +300,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               </ul>
             </div>
 
-            <div className="space-y-8">
-              <h4 className="font-bold mb-8 uppercase tracking-widest text-xs text-gray-400">Stay Updated</h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Get the latest AI breakthroughs delivered to your inbox.</p>
-              <div className="flex gap-2">
+            <div className="lg:col-span-3">
+              <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-gray-900 dark:text-gray-100">Stay Updated</h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Get the latest AI breakthroughs delivered to your inbox.</p>
+              <div className="flex items-center bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-1 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
                 <input 
                   type="email" 
                   placeholder="Email address" 
-                  className="flex-1 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none dark:text-white"
                 />
-                <button className="p-2 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors">
-                  <ArrowRight className="w-5 h-5" />
+                <button className="p-2 bg-primary text-white rounded-lg hover:bg-indigo-600 transition-colors">
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="pt-12 border-t border-gray-100 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-sm text-gray-400">
-              © 2026 Nexus AI. Built with Gemini 3.1 Pro.
+          <div className="pt-8 border-t border-gray-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-gray-400">
+              © 2026 Nexus AI. All rights reserved.
             </p>
-            <div className="flex gap-8 text-sm text-gray-400">
-              <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-primary transition-colors">Cookie Policy</a>
+            <div className="flex gap-6 text-xs text-gray-400">
+              <a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">System Status</a>
             </div>
           </div>
         </div>

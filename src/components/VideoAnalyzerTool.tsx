@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import { Video, Loader2, AlertCircle, Copy, Check, Upload, FileVideo, PlayCircle, MessageSquare, Clock, BrainCircuit } from "lucide-react";
 import { analyzeVideo } from "../services/geminiService";
 import { useDropzone } from "react-dropzone";
-import Markdown from "react-markdown";
 import { cn } from "../lib/utils";
 
 type Tab = "summarization" | "qna" | "action" | "reasoning";
@@ -332,8 +331,8 @@ export const VideoAnalyzerTool: React.FC = () => {
               {copied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
             </button>
           </div>
-          <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-            <Markdown>{result}</Markdown>
+          <div className="whitespace-pre-wrap font-sans text-gray-800 dark:text-gray-200 leading-relaxed text-base">
+            {result}
           </div>
         </motion.div>
       )}

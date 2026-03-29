@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { Mail, Loader2, AlertCircle, Copy, Check } from "lucide-react";
 import { pacifyEmail, EmailTone, ContentLength } from "../services/geminiService";
-import Markdown from "react-markdown";
 import { cn } from "../lib/utils";
 
 export const EmailPacifierTool: React.FC = () => {
@@ -144,8 +143,8 @@ export const EmailPacifierTool: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-            <Markdown>{pacified}</Markdown>
+          <div className="whitespace-pre-wrap font-sans text-gray-800 dark:text-gray-200 leading-relaxed text-base">
+            {pacified}
           </div>
         </motion.div>
       )}
