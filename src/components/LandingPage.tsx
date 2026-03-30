@@ -121,7 +121,7 @@ export const LandingPage: React.FC = () => {
               transition={{ delay: 0.1 }}
               className="text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] text-foreground"
             >
-              <br />
+              Nexus AI:<br />
               <span className="text-primary italic font-serif font-light">The Ultimate AI Suite.</span>
             </motion.h1>
 
