@@ -24,7 +24,21 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
   }, []);
 
   const handleChange = (index: number, value: string) => {
-    if (value.length > 1) value = value.slice(-1);
+    if (value.length > 1) {
+      // Handle paste or multi-character input
+      const pastedData = value.slice(0, 8).split("");
+      const newOtp = [...otp];
+      pastedData.forEach((char, i) => {
+        if (index + i < 8 && /^\d$/.test(char)) {
+          newOtp[index + i] = char;
+        }
+      });
+      setOtp(newOtp);
+      const nextIndex = Math.min(index + pastedData.length, 7);
+      inputRefs.current[nextIndex]?.focus();
+      return;
+    }
+
     if (!/^\d*$/.test(value)) return;
 
     const newOtp = [...otp];
@@ -34,6 +48,20 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
     if (value && index < 7) {
       inputRefs.current[index + 1]?.focus();
     }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const data = e.clipboardData.getData("text").trim();
+    if (!/^\d+$/.test(data)) return;
+    
+    const digits = data.slice(0, 8).split("");
+    const newOtp = [...otp];
+    digits.forEach((digit, i) => {
+      if (i < 8) newOtp[i] = digit;
+    });
+    setOtp(newOtp);
+    inputRefs.current[Math.min(digits.length, 7)]?.focus();
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -76,8 +104,6 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
 
         if (signUpError) throw signUpError;
 
-        // Note: Supabase trigger or manual insert needed for profile
-        // Assuming we do manual insert here if trigger isn't set
         if (data.user) {
           const { error: profileError } = await (supabase.from("profiles") as any).insert({
             user_id: data.user.id,
@@ -112,6 +138,8 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
 
       reset();
       start();
+      setOtp(Array(8).fill(""));
+      inputRefs.current[0]?.focus();
     } catch (err: any) {
       setError(err.message);
     }
@@ -119,60 +147,104 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="w-full max-w-md p-8 bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-gray-100 dark:border-slate-800"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="w-full max-w-md p-8 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-slate-800 relative overflow-hidden"
     >
-      <button onClick={onBack} className="mb-6 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-        <ArrowLeft className="w-5 h-5" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
+      
+      <button onClick={onBack} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-primary transition-colors group">
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm font-medium">Back</span>
       </button>
 
-      <h2 className="text-2xl font-bold text-center mb-2 text-slate-900 dark:text-white">Verify Email</h2>
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mb-8">
-        We sent an 8-digit code to <span className="font-medium text-slate-700 dark:text-slate-300">{email}</span>
-      </p>
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">Verify Identity</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          We've sent a secure code to <br />
+          <span className="font-semibold text-primary dark:text-primary-light">{email}</span>
+        </p>
+      </div>
       
       {error && (
-        <div className="mb-6 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm rounded-lg text-center">
+        <motion.div 
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="mb-6 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm rounded-xl text-center font-medium"
+        >
           {error}
-        </div>
+        </motion.div>
       )}
 
-      <div className="flex justify-between gap-2 mb-8">
-        {otp.map((digit, index) => (
-          <input
-            key={index}
-            ref={(el) => { inputRefs.current[index] = el; }}
-            type="text"
-            inputMode="numeric"
-            maxLength={1}
-            value={digit}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
-            className="w-10 h-12 text-center text-xl font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all dark:text-white"
-          />
-        ))}
+      <div className="space-y-6 mb-8">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {[0, 1, 2, 3].map((index) => (
+              <input
+                key={index}
+                ref={(el) => { inputRefs.current[index] = el; }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={otp[index]}
+                onPaste={handlePaste}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                className="w-10 h-14 sm:w-12 sm:h-16 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white shadow-sm"
+              />
+            ))}
+            <div className="w-2 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-1" />
+            {[4, 5, 6, 7].map((index) => (
+              <input
+                key={index}
+                ref={(el) => { inputRefs.current[index] = el; }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={otp[index]}
+                onPaste={handlePaste}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                className="w-10 h-14 sm:w-12 sm:h-16 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white shadow-sm"
+              />
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={handleVerify}
+          disabled={loading || otp.join("").length !== 8}
+          className="w-full py-4 bg-primary text-white rounded-2xl font-bold text-lg hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-50 disabled:pointer-events-none"
+        >
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Verifying...</span>
+            </div>
+          ) : (
+            "Verify & Continue"
+          )}
+        </button>
       </div>
 
-      <button
-        onClick={handleVerify}
-        disabled={loading || otp.join("").length !== 8}
-        className="w-full py-2.5 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors flex items-center justify-center disabled:opacity-70 mb-4"
-      >
-        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verify Code"}
-      </button>
-
-      <div className="text-center">
-        <button
-          onClick={handleResend}
-          disabled={isActive}
-          className={`text-sm font-medium transition-colors ${
-            isActive ? "text-slate-400 cursor-not-allowed" : "text-primary hover:underline"
-          }`}
-        >
-          {isActive ? `Resend OTP (${seconds}s)` : "Resend OTP"}
-        </button>
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-2 text-sm">
+          <span className="text-slate-500 dark:text-slate-400">Didn't receive the code?</span>
+          <button
+            onClick={handleResend}
+            disabled={isActive}
+            className={`font-bold transition-colors ${
+              isActive ? "text-slate-400 cursor-not-allowed" : "text-primary hover:text-primary/80"
+            }`}
+          >
+            {isActive ? `Resend in ${seconds}s` : "Resend Now"}
+          </button>
+        </div>
+        
+        <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-widest font-semibold">
+          Secure Verification by Nexus AI
+        </p>
       </div>
     </motion.div>
   );
