@@ -130,7 +130,7 @@ export const VideoAnalyzerTool: React.FC = () => {
           </div>
           
           <p className="text-gray-500 dark:text-gray-400">
-            Upload a video (up to 1 hour for gemini-2.5-flash-lite) and extract insights, ask questions, or perform complex reasoning.
+            Upload a video (up to 1 hour) and extract insights, ask questions, or perform complex reasoning.
           </p>
 
           <div className="flex flex-wrap gap-2 border-b border-gray-100 dark:border-slate-800 pb-4">

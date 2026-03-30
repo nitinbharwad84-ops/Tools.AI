@@ -150,7 +150,7 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-lg p-6 sm:p-10 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-slate-800 relative overflow-hidden"
+      className="w-full max-w-xl p-4 sm:p-10 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-slate-800 relative overflow-hidden"
     >
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
       
@@ -179,7 +179,7 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
 
       <div className="space-y-6 mb-8">
         <div className="flex flex-col items-center gap-4">
-          <div className="flex items-center gap-1 sm:gap-3">
+          <div className="flex items-center gap-0.5 sm:gap-3">
             {[0, 1, 2, 3].map((index) => (
               <input
                 key={index}
@@ -191,10 +191,10 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
                 onPaste={handlePaste}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className="w-8 h-12 sm:w-12 sm:h-16 text-center text-xl sm:text-2xl font-bold bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white shadow-sm"
+                className="w-7 h-10 sm:w-12 sm:h-16 text-center text-lg sm:text-2xl font-bold bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white shadow-sm"
               />
             ))}
-            <div className="w-1.5 sm:w-2 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-0.5 sm:mx-1" />
+            <div className="w-1 sm:w-2 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-0.5 sm:mx-1" />
             {[4, 5, 6, 7].map((index) => (
               <input
                 key={index}
@@ -206,7 +206,7 @@ export const OtpForm: React.FC<OtpFormProps> = ({ email, password, fullName, onS
                 onPaste={handlePaste}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className="w-8 h-12 sm:w-12 sm:h-16 text-center text-xl sm:text-2xl font-bold bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white shadow-sm"
+                className="w-7 h-10 sm:w-12 sm:h-16 text-center text-lg sm:text-2xl font-bold bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-100 dark:border-slate-800 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all dark:text-white shadow-sm"
               />
             ))}
           </div>

@@ -225,15 +225,6 @@ export async function generateImage(prompt: string, aspectRatio: AspectRatio, si
       }
     }
   } catch (error: any) {
-    const errorMessage = error.message || "";
-    if (
-      errorMessage.includes("Requested entity was not found") || 
-      errorMessage.includes("PERMISSION_DENIED") ||
-      errorMessage.includes("403") ||
-      errorMessage.includes("not authorized")
-    ) {
-      await checkApiKey(true);
-    }
     throw error;
   }
 
@@ -276,15 +267,6 @@ export async function editImage(base64Image: string, editPrompt: string, aspectR
       }
     }
   } catch (error: any) {
-    const errorMessage = error.message || "";
-    if (
-      errorMessage.includes("Requested entity was not found") || 
-      errorMessage.includes("PERMISSION_DENIED") ||
-      errorMessage.includes("403") ||
-      errorMessage.includes("not authorized")
-    ) {
-      await checkApiKey(true);
-    }
     throw error;
   }
 
@@ -420,7 +402,7 @@ export async function analyzeVideo(
   finalPrompt += PLAIN_TEXT_INSTRUCTION;
 
   const response = await videoAi.models.generateContent({
-    model: "gemini-2.5-flash-lite",
+    model: "gemini-3-flash-preview",
     contents: [
       {
         role: "user",
@@ -433,13 +415,4 @@ export async function analyzeVideo(
   });
 
   return response.text || "Failed to analyze video.";
-}
-
-export async function checkApiKey(force = false) {
-  if (typeof window !== "undefined" && (window as any).aistudio) {
-    const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-    if (!hasKey || force) {
-      await (window as any).aistudio.openSelectKey();
-    }
-  }
 }

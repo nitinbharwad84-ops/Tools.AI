@@ -53,7 +53,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({ onSuccess, onSwitchToSig
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-lg p-8 bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-gray-100 dark:border-slate-800"
+      className="w-full max-w-xl p-4 sm:p-10 bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-gray-100 dark:border-slate-800"
     >
       <h2 className="text-2xl font-bold text-center mb-6 text-slate-900 dark:text-white">Welcome Back</h2>
       

@@ -10,6 +10,7 @@ import {
   Video,
   ArrowRight
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export type ToolId = "social-gen" | "summarizer" | "resume-roaster" | "email-pacifier" | "image-gen" | "grammar-fixer" | "video-analyzer";
 
@@ -74,11 +75,10 @@ const tools: Tool[] = [
 ];
 
 interface DashboardProps {
-  onSelectTool: (id: ToolId) => void;
-  activeTool?: ToolId;
+  // onSelectTool removed in favor of Link
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ onSelectTool, activeTool }) => {
+export const Dashboard: React.FC<DashboardProps> = () => {
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       <div className="mb-12">
@@ -93,30 +93,29 @@ export const Dashboard: React.FC<DashboardProps> = ({ onSelectTool, activeTool }
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {tools.map((tool) => (
-          <motion.button
+          <motion.div
             key={tool.id}
             whileHover={{ y: -8 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => onSelectTool(tool.id)}
-            className={`group text-left p-8 rounded-[40px] border transition-all duration-300 ${
-              activeTool === tool.id
-                ? "bg-primary/5 border-primary shadow-xl shadow-primary/10"
-                : "bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:border-primary/20"
-            }`}
           >
-            <div className={`w-16 h-16 ${tool.color} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-${tool.color.split('-')[1]}-500/20`}>
-              <tool.icon className="w-8 h-8" />
-            </div>
-            <h3 className="text-2xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
-              {tool.name}
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-8">
-              {tool.description}
-            </p>
-            <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary">
-              Open Tool <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </motion.button>
+            <Link
+              to={`/tools/${tool.id}`}
+              className="group block text-left p-8 rounded-[40px] border transition-all duration-300 bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:border-primary/20"
+            >
+              <div className={`w-16 h-16 ${tool.color} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-${tool.color.split('-')[1]}-500/20`}>
+                <tool.icon className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
+                {tool.name}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-8">
+                {tool.description}
+              </p>
+              <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary">
+                Open Tool <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+          </motion.div>
         ))}
       </div>
     </div>

@@ -3,17 +3,16 @@ import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, ArrowRight, Zap, Shield, Globe, Image as ImageIcon, CheckCircle2, Twitter, Linkedin, Instagram, Github, Mail, ExternalLink, FileText, Flame, Type, Video, User, Settings, LogOut } from "lucide-react";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { useAuthStore } from "../stores/authStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-interface LandingPageProps {
-  onStart: () => void;
-  onNavigate: (view: "landing" | "dashboard" | "tool" | "history" | "profile") => void;
-}
-
-export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate }) => {
+export const LandingPage: React.FC = () => {
   const { user, profile, signOut } = useAuthStore();
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const handleStart = () => {
+    navigate("/dashboard");
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-hidden transition-colors duration-300">
@@ -26,7 +25,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
           </div>
           <div className="flex items-center gap-6">
             <button 
-              onClick={onStart}
+              onClick={handleStart}
               className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold uppercase tracking-widest rounded-full hover:bg-primary-dark hover:scale-105 transition-all shadow-lg shadow-primary/25"
             >
               Launch App <ArrowRight className="w-4 h-4" />
@@ -67,16 +66,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
                         </p>
                       </div>
                       <div className="p-2">
-                        <button
-                          onClick={() => {
-                            onNavigate("profile");
-                            setIsProfileOpen(false);
-                          }}
+                        <Link
+                          to="/profile"
+                          onClick={() => setIsProfileOpen(false)}
                           className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                         >
                           <Settings className="w-4 h-4" />
                           Settings
-                        </button>
+                        </Link>
                         <button
                           onClick={async () => {
                             setIsProfileOpen(false);
@@ -144,7 +141,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
               className="flex flex-col sm:flex-row gap-4"
             >
               <button
-                onClick={onStart}
+                onClick={handleStart}
                 className="px-10 py-5 bg-gradient-to-r from-primary to-indigo-500 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_40px_-10px_rgba(79,70,229,0.5)] hover:shadow-[0_0_60px_-15px_rgba(79,70,229,0.7)]"
               >
                 Start Creating Now <ArrowRight className="w-5 h-5" />
@@ -368,7 +365,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
             <h2 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">Ready to enter the <span className="italic font-serif font-light">Nexus</span>?</h2>
             <p className="text-xl text-white/70 max-w-xl mx-auto">Join thousands of professionals who have reclaimed their time with our unified AI suite.</p>
             <button 
-              onClick={onStart}
+              onClick={handleStart}
               className="px-12 py-6 bg-white text-primary rounded-2xl font-bold text-xl hover:scale-105 transition-transform shadow-xl"
             >
               Launch Platform Now
@@ -455,3 +452,4 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate })
     </div>
   );
 };
+

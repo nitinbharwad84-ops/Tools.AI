@@ -4,6 +4,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import App from './App.tsx';
 import { AuthPage } from './pages/AuthPage.tsx';
+import { LandingPage } from './components/LandingPage.tsx';
+import { Dashboard } from './components/Dashboard.tsx';
+import { ToolPage } from './pages/ToolPage.tsx';
+import { HistoryPage } from './pages/HistoryPage.tsx';
+import { ProfilePage } from './pages/ProfilePage.tsx';
 import './index.css';
 import { HistoryProvider } from './context/HistoryContext';
 import { useAuthStore } from './stores/authStore';
@@ -66,11 +71,32 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <AuthWrapper><LandingPage /></AuthWrapper>,
+  },
+  {
+    element: <AuthWrapper><App /></AuthWrapper>,
+    children: [
+      {
+        path: "dashboard",
+        element: <ProtectedRoute><Dashboard /></ProtectedRoute>,
+      },
+      {
+        path: "tools/:toolId",
+        element: <ProtectedRoute><ToolPage /></ProtectedRoute>,
+      },
+      {
+        path: "history",
+        element: <ProtectedRoute><HistoryPage /></ProtectedRoute>,
+      },
+      {
+        path: "profile",
+        element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
+      },
+    ],
   },
   {
     path: "/auth",
-    element: <AuthPage />,
+    element: <AuthWrapper><AuthPage /></AuthWrapper>,
   },
 ]);
 
