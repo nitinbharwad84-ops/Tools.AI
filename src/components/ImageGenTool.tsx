@@ -21,7 +21,7 @@ const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }
 );
 
 export const ImageGenTool: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const navigate = useNavigate();
   const [mode, setMode] = useState<"generate" | "edit">("generate");
   const [prompt, setPrompt] = useState("");
@@ -68,7 +68,7 @@ export const ImageGenTool: React.FC = () => {
     setResultImage(null);
 
     try {
-      const result = await generateImage(prompt, aspectRatio, "1K", style);
+      const result = await generateImage(prompt, aspectRatio, "1K", style, profile?.gemini_api_key);
       setResultImage(result);
       
       if (user) {
@@ -108,7 +108,7 @@ export const ImageGenTool: React.FC = () => {
     setResultImage(null);
 
     try {
-      const result = await editImage(baseImage, editPrompt, aspectRatio);
+      const result = await editImage(baseImage, editPrompt, aspectRatio, profile?.gemini_api_key);
       setResultImage(result);
       
       if (user) {
@@ -134,7 +134,7 @@ export const ImageGenTool: React.FC = () => {
     setIsEnhancingPrompt(true);
     setOriginalPrompt(prompt);
     try {
-      const enhanced = await enhanceImagePrompt(prompt);
+      const enhanced = await enhanceImagePrompt(prompt, profile?.gemini_api_key);
       setPrompt(enhanced);
     } catch (err) {
       console.error("Failed to enhance prompt", err);
@@ -148,7 +148,7 @@ export const ImageGenTool: React.FC = () => {
     setIsEnhancingEditPrompt(true);
     setOriginalPrompt(editPrompt);
     try {
-      const enhanced = await enhanceImagePrompt(editPrompt);
+      const enhanced = await enhanceImagePrompt(editPrompt, profile?.gemini_api_key);
       setEditPrompt(enhanced);
     } catch (err) {
       console.error("Failed to enhance prompt", err);

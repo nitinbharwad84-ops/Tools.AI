@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 type Tab = "summarization" | "qna" | "action" | "reasoning";
 
 export const VideoAnalyzerTool: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("summarization");
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -84,7 +84,7 @@ export const VideoAnalyzerTool: React.FC = () => {
     };
 
     try {
-      const res = await analyzeVideo(videoBase64, mimeType, activeTab, prompt, options);
+      const res = await analyzeVideo(videoBase64, mimeType, activeTab, prompt, options, profile?.gemini_api_key);
       setResult(res);
       
       if (user) {

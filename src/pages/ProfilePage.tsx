@@ -9,9 +9,10 @@ import * as z from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { HistoryPage } from "./HistoryPage";
 
-const profileSchema = z.object({
+  const profileSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
   bio: z.string().max(160, "Bio must be less than 160 characters").optional(),
+  geminiApiKey: z.string().optional(),
 });
 
 type ProfileValues = z.infer<typeof profileSchema>;
@@ -23,16 +24,19 @@ export const ProfilePage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showApiKey, setShowApiKey] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       fullName: profile?.full_name || "",
       bio: profile?.bio || "",
+      geminiApiKey: profile?.gemini_api_key || "",
     },
   });
 
@@ -88,13 +92,19 @@ export const ProfilePage: React.FC = () => {
         .update({
           full_name: data.fullName,
           bio: data.bio,
+          gemini_api_key: data.geminiApiKey,
         })
         .eq("user_id", user?.id);
 
       if (error) throw error;
 
       if (profile) {
-        setProfile({ ...profile, full_name: data.fullName, bio: data.bio || null });
+        setProfile({ 
+          ...profile, 
+          full_name: data.fullName, 
+          bio: data.bio || null,
+          gemini_api_key: data.geminiApiKey || null
+        });
       }
       setSuccess("Profile updated successfully!");
     } catch (err: any) {
@@ -242,6 +252,41 @@ export const ProfilePage: React.FC = () => {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6"
           >
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-slate-800">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">API Configuration</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Gemini API Key</label>
+                    <button 
+                      onClick={() => setShowApiKey(!showApiKey)}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      {showApiKey ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      {...register("geminiApiKey")}
+                      type={showApiKey ? "text" : "password"}
+                      placeholder="Enter your Gemini API key..."
+                      className="flex-1 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all dark:text-white"
+                    />
+                    <button
+                      onClick={handleSubmit(onSubmit)}
+                      disabled={saving}
+                      className="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-70"
+                    >
+                      {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    Your API key is used for all generations. If left blank, the system's default key will be used.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-slate-800">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Appearance</h3>
               <div className="space-y-4">

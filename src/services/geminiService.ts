@@ -2,6 +2,14 @@ import { GoogleGenAI, GenerateContentResponse, Modality } from "@google/genai";
 
 const API_KEY = process.env.GEMINI_API_KEY;
 
+function getGenAI(userKey?: string | null) {
+  const key = userKey || (typeof process !== "undefined" && process.env.API_KEY) || API_KEY;
+  if (!key) {
+    throw new Error("Gemini API Key is missing. Please provide one in your profile settings or ensure the system default is set.");
+  }
+  return new GoogleGenAI({ apiKey: key });
+}
+
 export type Tone = "professional" | "witty" | "urgent";
 export type TargetAudience = "general" | "tech" | "business" | "creatives" | "students";
 export type ContentLength = "short" | "medium" | "long";
@@ -31,8 +39,6 @@ export interface GeneratedPost {
   error: string | null;
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
-
 const PLAIN_TEXT_INSTRUCTION = `
 IMPORTANT: Format your response as plain text. Do NOT use any Markdown formatting (no asterisks, no hashes, no underscores). Use standard unicode characters for bullets (•) and proper line breaks for spacing. Ensure the text is ready to be copied and pasted directly without any markdown symbols.`;
 
@@ -42,8 +48,10 @@ export async function generateSocialContent(
   platforms: string[], 
   targetAudience: TargetAudience,
   length: ContentLength,
-  includeEmojis: boolean
+  includeEmojis: boolean,
+  userApiKey?: string | null
 ): Promise<PlatformContent[]> {
+  const ai = getGenAI(userApiKey);
   const audienceDescriptions: Record<TargetAudience, string> = {
     general: "a broad, general audience with diverse interests.",
     tech: "tech-savvy individuals, developers, and early adopters.",
@@ -120,8 +128,10 @@ export async function regenerateSinglePost(
   platform: string, 
   targetAudience: TargetAudience,
   length: ContentLength,
-  includeEmojis: boolean
+  includeEmojis: boolean,
+  userApiKey?: string | null
 ): Promise<PlatformContent> {
+  const ai = getGenAI(userApiKey);
   const audienceDescriptions: Record<TargetAudience, string> = {
     general: "a broad, general audience with diverse interests.",
     tech: "tech-savvy individuals, developers, and early adopters.",
@@ -184,7 +194,8 @@ export async function regenerateSinglePost(
   }
 }
 
-export async function enhanceImagePrompt(prompt: string): Promise<string> {
+export async function enhanceImagePrompt(prompt: string, userApiKey?: string | null): Promise<string> {
+  const ai = getGenAI(userApiKey);
   const promptText = `
     You are an expert AI image generation prompt engineer. 
     Take the following basic prompt and enhance it into a highly detailed, descriptive, and visually rich prompt suitable for a text-to-image model. 
@@ -202,9 +213,8 @@ export async function enhanceImagePrompt(prompt: string): Promise<string> {
   return response.text?.trim() || prompt;
 }
 
-export async function generateImage(prompt: string, aspectRatio: AspectRatio, size: ImageSize, style?: ImageStyle): Promise<string> {
-  const currentApiKey = (typeof process !== "undefined" && process.env.API_KEY) || API_KEY;
-  const imageAi = new GoogleGenAI({ apiKey: currentApiKey! });
+export async function generateImage(prompt: string, aspectRatio: AspectRatio, size: ImageSize, style?: ImageStyle, userApiKey?: string | null): Promise<string> {
+  const imageAi = getGenAI(userApiKey);
   
   const styledPrompt = style ? `A ${style} of: ${prompt}` : prompt;
 
@@ -231,9 +241,8 @@ export async function generateImage(prompt: string, aspectRatio: AspectRatio, si
   throw new Error("No image data returned from the model.");
 }
 
-export async function editImage(base64Image: string, editPrompt: string, aspectRatio: AspectRatio): Promise<string> {
-  const currentApiKey = (typeof process !== "undefined" && process.env.API_KEY) || API_KEY;
-  const imageAi = new GoogleGenAI({ apiKey: currentApiKey! });
+export async function editImage(base64Image: string, editPrompt: string, aspectRatio: AspectRatio, userApiKey?: string | null): Promise<string> {
+  const imageAi = getGenAI(userApiKey);
 
   const mimeType = base64Image.split(";")[0].split(":")[1];
   const data = base64Image.split(",")[1];
@@ -278,8 +287,10 @@ export async function summarizeContent(
   type: "text" | "file" | "url",
   length: ContentLength,
   focus: SummaryFocus,
-  tone: WritingStyle
+  tone: WritingStyle,
+  userApiKey?: string | null
 ): Promise<string> {
+  const ai = getGenAI(userApiKey);
   const focusDesc = {
     "key-takeaways": "Focus on the most important points and insights.",
     "action-items": "Focus on extracting actionable steps and tasks.",
@@ -307,7 +318,8 @@ export async function summarizeContent(
   return response.text || "Failed to generate summary.";
 }
 
-export async function roastResume(resumeText: string, intensity: RoastIntensity): Promise<string> {
+export async function roastResume(resumeText: string, intensity: RoastIntensity, userApiKey?: string | null): Promise<string> {
+  const ai = getGenAI(userApiKey);
   const intensityDesc = {
     mild: "A gentle, playful roast. Be funny but kind.",
     spicy: "A sharp, witty roast. Don't hold back too much.",
@@ -336,7 +348,8 @@ export async function roastResume(resumeText: string, intensity: RoastIntensity)
   return response.text || "Failed to roast resume.";
 }
 
-export async function pacifyEmail(emailText: string, tone: EmailTone, length: ContentLength): Promise<string> {
+export async function pacifyEmail(emailText: string, tone: EmailTone, length: ContentLength, userApiKey?: string | null): Promise<string> {
+  const ai = getGenAI(userApiKey);
   const prompt = `
     The following email is angry, rude, or passive-aggressive. 
     Rewrite it to be ${tone} and polished while preserving the original intent. 
@@ -356,7 +369,8 @@ export async function pacifyEmail(emailText: string, tone: EmailTone, length: Co
   return response.text || "Failed to pacify email.";
 }
 
-export async function fixGrammar(text: string, style: WritingStyle, dialect: Dialect): Promise<string> {
+export async function fixGrammar(text: string, style: WritingStyle, dialect: Dialect, userApiKey?: string | null): Promise<string> {
+  const ai = getGenAI(userApiKey);
   const prompt = `
     Fix the grammar, spelling, and punctuation of the following text. 
     Writing Style: ${style}.
@@ -383,10 +397,10 @@ export async function analyzeVideo(
   mimeType: string,
   tab: "summarization" | "qna" | "action" | "reasoning",
   promptText: string,
-  options: any
+  options: any,
+  userApiKey?: string | null
 ): Promise<string> {
-  const currentApiKey = (typeof process !== "undefined" && process.env.API_KEY) || API_KEY;
-  const videoAi = new GoogleGenAI({ apiKey: currentApiKey! });
+  const videoAi = getGenAI(userApiKey);
 
   let finalPrompt = "";
   if (tab === "summarization") {

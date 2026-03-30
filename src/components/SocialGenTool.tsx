@@ -24,7 +24,7 @@ import { useAuthStore } from "../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
 export const SocialGenTool: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const navigate = useNavigate();
   
   const [idea, setIdea] = useState("");
@@ -59,7 +59,15 @@ export const SocialGenTool: React.FC = () => {
     setPosts([]);
 
     try {
-      const platformContents = await generateSocialContent(idea, tone, selectedPlatforms, targetAudience, contentLength, includeEmojis);
+      const platformContents = await generateSocialContent(
+        idea, 
+        tone, 
+        selectedPlatforms, 
+        targetAudience, 
+        contentLength, 
+        includeEmojis,
+        profile?.gemini_api_key
+      );
       
       const initialPosts: GeneratedPost[] = platformContents.map(pc => ({
         platform: pc.platform,
@@ -73,7 +81,13 @@ export const SocialGenTool: React.FC = () => {
 
       const imagePromises = platformContents.map(async (pc, index) => {
         try {
-          const imageUrl = await generateImage(pc.imagePrompt, aspectRatio, imageSize);
+          const imageUrl = await generateImage(
+            pc.imagePrompt, 
+            aspectRatio, 
+            imageSize, 
+            undefined, 
+            profile?.gemini_api_key
+          );
           setPosts(prev => {
             const newPosts = [...prev];
             newPosts[index] = { ...newPosts[index], imageUrl, loading: false };
@@ -126,8 +140,22 @@ export const SocialGenTool: React.FC = () => {
     });
 
     try {
-      const newContent = await regenerateSinglePost(idea, tone as Tone, post.platform, targetAudience, contentLength, includeEmojis);
-      const newImageUrl = await generateImage(newContent.imagePrompt, aspectRatio, imageSize);
+      const newContent = await regenerateSinglePost(
+        idea, 
+        tone as Tone, 
+        post.platform, 
+        targetAudience, 
+        contentLength, 
+        includeEmojis,
+        profile?.gemini_api_key
+      );
+      const newImageUrl = await generateImage(
+        newContent.imagePrompt, 
+        aspectRatio, 
+        imageSize, 
+        undefined, 
+        profile?.gemini_api_key
+      );
       
       setPosts(prev => {
         const newPosts = [...prev];

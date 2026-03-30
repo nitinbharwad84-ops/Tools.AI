@@ -8,7 +8,7 @@ import { useAuthStore } from "../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
 export const GrammarFixerTool: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [fixed, setFixed] = useState("");
@@ -33,7 +33,7 @@ export const GrammarFixerTool: React.FC = () => {
     setFixed("");
 
     try {
-      const result = await fixGrammar(input, style, dialect);
+      const result = await fixGrammar(input, style, dialect, profile?.gemini_api_key);
       setFixed(result);
       
       if (user) {

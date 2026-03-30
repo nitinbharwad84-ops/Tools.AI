@@ -8,7 +8,7 @@ import { useAuthStore } from "../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
 export const EmailPacifierTool: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [pacified, setPacified] = useState("");
@@ -33,7 +33,7 @@ export const EmailPacifierTool: React.FC = () => {
     setPacified("");
 
     try {
-      const result = await pacifyEmail(input, tone, length);
+      const result = await pacifyEmail(input, tone, length, profile?.gemini_api_key);
       setPacified(result);
       
       if (user) {

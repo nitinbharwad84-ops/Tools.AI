@@ -10,7 +10,7 @@ import { useAuthStore } from "../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
 export const ResumeRoasterTool: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const navigate = useNavigate();
   const [mode, setMode] = useState<"text" | "file">("text");
   const [input, setInput] = useState("");
@@ -68,7 +68,7 @@ export const ResumeRoasterTool: React.FC = () => {
         }
       }
 
-      const result = await roastResume(contentToRoast, intensity);
+      const result = await roastResume(contentToRoast, intensity, profile?.gemini_api_key);
       setRoast(result);
       
       if (user) {

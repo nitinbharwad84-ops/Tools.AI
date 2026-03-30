@@ -11,7 +11,7 @@ import { useAuthStore } from "../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
 export const SummarizerTool: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, profile } = useAuthStore();
   const navigate = useNavigate();
   const [mode, setMode] = useState<"text" | "file" | "url">("text");
   const [input, setInput] = useState("");
@@ -97,7 +97,14 @@ export const SummarizerTool: React.FC = () => {
         }
       }
 
-      const result = await summarizeContent(contentToSummarize, mode, length, focus, tone);
+      const result = await summarizeContent(
+        contentToSummarize, 
+        mode, 
+        length, 
+        focus, 
+        tone,
+        profile?.gemini_api_key
+      );
       setSummary(result);
       
       if (user) {
