@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "motion/react";
 import { User, Clock, Settings, Upload, Loader2 } from "lucide-react";
 import { useAuthStore } from "../stores/authStore";
@@ -116,6 +117,10 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
+      <Helmet>
+        <title>Your Profile | Nexus AI</title>
+        <meta name="description" content="Manage your Nexus AI profile, update your details, view your generation history, and configure your account settings." />
+      </Helmet>
       <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">Your Profile</h1>
 
       <div className="flex space-x-1 mb-8 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">

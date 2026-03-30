@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "motion/react";
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../services/supabaseClient";
@@ -122,6 +123,10 @@ export const HistoryPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
+      <Helmet>
+        <title>Generation History | Nexus AI</title>
+        <meta name="description" content="View and manage your past AI-generated content with Nexus AI. Easily access, download, or delete your generation history." />
+      </Helmet>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Generation History</h1>
         {!isEmpty && (

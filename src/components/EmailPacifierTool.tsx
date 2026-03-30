@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "motion/react";
 import { Mail, Loader2, AlertCircle, Copy, Check } from "lucide-react";
 import { pacifyEmail, EmailTone, ContentLength } from "../services/geminiService";
@@ -62,20 +63,17 @@ export const EmailPacifierTool: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">AI Email Pacifier</h1>
-        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-          Transform angry or passive-aggressive emails into calm, professional masterpieces while preserving your original intent.
-        </p>
-      </div>
-
+      <Helmet>
+        <title>Email Pacifier | Nexus AI</title>
+        <meta name="description" content="Turn angry or passive-aggressive emails into professional, polite communication with Nexus AI's Email Pacifier tool." />
+      </Helmet>
       <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-gray-100 dark:border-slate-800 p-8 shadow-sm">
         <div className="space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white">
               <Mail className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-foreground">Rewrite Your Email</h2>
+            <h3 className="text-2xl font-bold text-foreground">Email Pacifier</h3>
           </div>
           
           <p className="text-gray-500 dark:text-gray-400">

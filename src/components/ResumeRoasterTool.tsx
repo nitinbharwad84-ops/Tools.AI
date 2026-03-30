@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "motion/react";
 import { FileText, Type, Loader2, AlertCircle, Copy, Check, Flame } from "lucide-react";
 import { roastResume, RoastIntensity } from "../services/geminiService";
@@ -97,13 +98,10 @@ export const ResumeRoasterTool: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">AI Resume Roaster</h1>
-        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-          Get a brutally honest, witty roast of your resume with actionable improvement tips to help you land that dream job.
-        </p>
-      </div>
-
+      <Helmet>
+        <title>Resume Roaster | Nexus AI</title>
+        <meta name="description" content="Get honest, brutal feedback on your resume with Nexus AI's Resume Roaster. Improve your job prospects with AI-driven critique." />
+      </Helmet>
       <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-gray-100 dark:border-slate-800 p-8 shadow-sm">
         <div className="flex flex-wrap gap-4 mb-8">
           {[

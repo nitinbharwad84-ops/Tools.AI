@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Send, Loader2, AlertCircle, ArrowLeft, ChevronRight, LayoutGrid, Type, Image as ImageIcon, Globe, FileText, Flame, Mail, CheckCircle2, Clock, User, LogOut, Settings } from "lucide-react";
 import { 
@@ -179,6 +180,10 @@ export const SocialGenTool: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
+      <Helmet>
+        <title>Social Gen AI | Nexus AI</title>
+        <meta name="description" content="Generate viral social media posts for LinkedIn, X, and Instagram with AI visuals using Nexus AI's Social Gen tool." />
+      </Helmet>
       <div className="flex items-center gap-4 mb-8">
         <button 
           onClick={() => navigate("/dashboard")}
@@ -187,10 +192,8 @@ export const SocialGenTool: React.FC = () => {
           <ArrowLeft className="w-6 h-6" />
         </button>
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">AI Viral Social Media Generator</h1>
-          <p className="text-slate-500 dark:text-slate-400 max-w-2xl">
-            Transform your ideas into high-engagement social media posts across multiple platforms, complete with AI-generated visuals.
-          </p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Social Gen AI</h1>
+          <p className="text-slate-500 dark:text-slate-400">Generate viral social media posts with AI visuals.</p>
         </div>
       </div>
 

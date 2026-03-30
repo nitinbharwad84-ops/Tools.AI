@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "motion/react";
 import { Type, Loader2, AlertCircle, Copy, Check } from "lucide-react";
 import { fixGrammar, WritingStyle, Dialect } from "../services/geminiService";
@@ -62,20 +63,17 @@ export const GrammarFixerTool: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">AI Grammar & Style Fixer</h1>
-        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-          Perfect your writing with instant grammar corrections, spelling fixes, and style enhancements tailored to your audience.
-        </p>
-      </div>
-
+      <Helmet>
+        <title>Grammar Fixer | Nexus AI</title>
+        <meta name="description" content="Instantly fix grammar, spelling, and flow in your text while maintaining your original meaning with Nexus AI's Grammar Fixer." />
+      </Helmet>
       <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-gray-100 dark:border-slate-800 p-8 shadow-sm">
         <div className="space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white">
               <Type className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-foreground">Refine Your Text</h2>
+            <h3 className="text-2xl font-bold text-foreground">Grammar Fixer</h3>
           </div>
           
           <p className="text-gray-500 dark:text-gray-400">

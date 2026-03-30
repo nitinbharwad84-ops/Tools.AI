@@ -1,5 +1,6 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import App from './App.tsx';
@@ -102,12 +103,14 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <HistoryProvider>
-        <AuthWrapper>
-          <RouterProvider router={router} />
-        </AuthWrapper>
-      </HistoryProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <HistoryProvider>
+          <AuthWrapper>
+            <RouterProvider router={router} />
+          </AuthWrapper>
+        </HistoryProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   </StrictMode>,
 );

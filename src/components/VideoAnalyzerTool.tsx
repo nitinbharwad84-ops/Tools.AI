@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "motion/react";
 import { Video, Loader2, AlertCircle, Copy, Check, Upload, FileVideo, PlayCircle, MessageSquare, Clock, BrainCircuit } from "lucide-react";
 import { analyzeVideo } from "../services/geminiService";
@@ -120,20 +121,17 @@ export const VideoAnalyzerTool: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">AI Video Intelligence</h1>
-        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-          Analyze video content with precision. Extract summaries, ask questions, identify actions, and perform deep reasoning using multimodal AI.
-        </p>
-      </div>
-
+      <Helmet>
+        <title>Video Analyzer | Nexus AI</title>
+        <meta name="description" content="Upload and analyze videos with Nexus AI's Video Analyzer. Get summaries, answer questions, and perform multimodal reasoning on your video content." />
+      </Helmet>
       <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-gray-100 dark:border-slate-800 p-8 shadow-sm">
         <div className="space-y-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-cyan-500 rounded-xl flex items-center justify-center text-white">
               <Video className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-foreground">Analyze Your Video</h2>
+            <h3 className="text-2xl font-bold text-foreground">Video Analyzer</h3>
           </div>
           
           <p className="text-gray-500 dark:text-gray-400">
