@@ -21,16 +21,25 @@ async function startServer() {
     }
 
     const fetchWithRetry = async (url: string, retries = 2): Promise<any> => {
+      const urlObj = new URL(url);
       try {
         return await axios.get(url, {
           headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             "Accept-Language": "en-US,en;q=0.9",
             "Accept-Encoding": "gzip, deflate, br",
             "Connection": "keep-alive",
             "Upgrade-Insecure-Requests": "1",
-            "Cache-Control": "max-age=0"
+            "Cache-Control": "max-age=0",
+            "Referer": `${urlObj.protocol}//${urlObj.hostname}/`,
+            "Sec-Ch-Ua": '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": '"Windows"',
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1"
           },
           timeout: 15000,
           maxRedirects: 5,
@@ -65,10 +74,17 @@ async function startServer() {
 
       res.json({ text: text.substring(0, 15000) }); // Limit text length
     } catch (error: any) {
-      console.error("Error fetching URL:", error.message, error.code);
-      const message = error.code === 'ECONNRESET' || error.message.includes('socket hang up')
-        ? "The server closed the connection unexpectedly. This often happens with sites that block automated access."
-        : "Failed to fetch URL content. Make sure the URL is valid and accessible.";
+      console.error("Error fetching URL:", error.message, error.code, error.response?.status);
+      let message = "Failed to fetch URL content. Make sure the URL is valid and accessible.";
+      
+      if (error.response?.status === 403) {
+        message = "Access Forbidden (403). This website blocks automated access. You can try copying the text manually.";
+      } else if (error.code === 'ECONNRESET' || error.message.includes('socket hang up')) {
+        message = "The server closed the connection unexpectedly. This often happens with sites that block automated access.";
+      } else if (error.code === 'ETIMEDOUT') {
+        message = "The request timed out. The website took too long to respond.";
+      }
+      
       res.status(500).json({ error: message });
     }
   });
