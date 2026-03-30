@@ -6,8 +6,13 @@ import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { parseFile } from "../lib/fileParser";
 import { cn } from "../lib/utils";
+import { saveGenerationHistory } from "../services/historyService";
+import { useAuthStore } from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 export const SummarizerTool: React.FC = () => {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<"text" | "file" | "url">("text");
   const [input, setInput] = useState("");
   const [url, setUrl] = useState("");
@@ -64,6 +69,10 @@ export const SummarizerTool: React.FC = () => {
   });
 
   const handleSummarize = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     setLoading(true);
     setError("");
     setSummary("");
@@ -90,6 +99,18 @@ export const SummarizerTool: React.FC = () => {
 
       const result = await summarizeContent(contentToSummarize, mode, length, focus, tone);
       setSummary(result);
+      
+      if (user) {
+        await saveGenerationHistory(
+          user.id,
+          "summarizer",
+          mode === "text" ? input : mode === "url" ? url : file?.name || "File upload",
+          null,
+          { mode, length, focus, tone },
+          result,
+          "text"
+        );
+      }
     } catch (err: any) {
       setError(err.message || "Failed to summarize content.");
     } finally {

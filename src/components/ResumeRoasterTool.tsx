@@ -5,8 +5,13 @@ import { roastResume, RoastIntensity } from "../services/geminiService";
 import { useDropzone } from "react-dropzone";
 import { parseFile } from "../lib/fileParser";
 import { cn } from "../lib/utils";
+import { saveGenerationHistory } from "../services/historyService";
+import { useAuthStore } from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 export const ResumeRoasterTool: React.FC = () => {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<"text" | "file">("text");
   const [input, setInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -39,6 +44,10 @@ export const ResumeRoasterTool: React.FC = () => {
   });
 
   const handleRoast = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     setLoading(true);
     setError("");
     setRoast("");
@@ -61,6 +70,18 @@ export const ResumeRoasterTool: React.FC = () => {
 
       const result = await roastResume(contentToRoast, intensity);
       setRoast(result);
+      
+      if (user) {
+        await saveGenerationHistory(
+          user.id,
+          "resume-roaster",
+          mode === "text" ? input : file?.name || "File upload",
+          null,
+          { intensity, mode },
+          result,
+          "text"
+        );
+      }
     } catch (err: any) {
       setError(err.message || "Failed to roast resume.");
     } finally {

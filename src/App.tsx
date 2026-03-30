@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Sparkles, Send, Loader2, AlertCircle, ArrowLeft, ChevronRight, LayoutGrid, Type, Image as ImageIcon, Globe, FileText, Flame, Mail, CheckCircle2 } from "lucide-react";
+import { Sparkles, Send, Loader2, AlertCircle, ArrowLeft, ChevronRight, LayoutGrid, Type, Image as ImageIcon, Globe, FileText, Flame, Mail, CheckCircle2, Clock, User, LogOut, Settings } from "lucide-react";
 import { 
   generateSocialContent, 
   generateImage, 
@@ -29,10 +29,21 @@ import { EmailPacifierTool } from "./components/EmailPacifierTool";
 import { ImageGenTool } from "./components/ImageGenTool";
 import { GrammarFixerTool } from "./components/GrammarFixerTool";
 import { VideoAnalyzerTool } from "./components/VideoAnalyzerTool";
+import { HistoryPage } from "./pages/HistoryPage";
 import { cn } from "./lib/utils";
+import { saveGenerationHistory } from "./services/historyService";
+import { useAuthStore } from "./stores/authStore";
+import { useNavigate, useLocation } from "react-router-dom";
+
+import { ProfilePage } from "./pages/ProfilePage";
 
 export default function App() {
-  const [view, setView] = useState<"landing" | "dashboard" | "tool">("landing");
+  const { user, profile, signOut } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Derive view from URL or state
+  const [view, setView] = useState<"landing" | "dashboard" | "tool" | "history" | "profile">("landing");
   const [activeTool, setActiveTool] = useState<ToolId | null>(null);
   const [idea, setIdea] = useState("");
   const [tone, setTone] = useState<Tone>("professional");
@@ -45,6 +56,15 @@ export default function App() {
   const [posts, setPosts] = useState<GeneratedPost[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  useEffect(() => {
+    if (view === "history" || view === "profile") {
+      if (!user) {
+        navigate("/auth");
+      }
+    }
+  }, [view, user, navigate]);
 
   useEffect(() => {
     if (view !== "landing") {
@@ -72,6 +92,10 @@ export default function App() {
   };
 
   const handleGenerate = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     if (!idea.trim() || selectedPlatforms.length === 0) return;
 
     setIsGenerating(true);
@@ -117,6 +141,18 @@ export default function App() {
       });
 
       await Promise.all(imagePromises);
+
+      if (user) {
+        await saveGenerationHistory(
+          user.id,
+          "social-gen",
+          idea,
+          null,
+          { tone, targetAudience, contentLength, includeEmojis, selectedPlatforms, imageSize, aspectRatio },
+          JSON.stringify(platformContents),
+          "text"
+        );
+      }
     } catch (err: any) {
       console.error("Generation failed", err);
       setError(err.message || "Something went wrong. Please try again.");
@@ -509,7 +545,7 @@ export default function App() {
   };
 
   if (view === "landing") {
-    return <LandingPage onStart={() => setView("dashboard")} />;
+    return <LandingPage onStart={() => setView("dashboard")} onNavigate={setView} />;
   }
 
   return (
@@ -517,16 +553,7 @@ export default function App() {
       {/* Top Navigation Bar */}
       <nav className="sticky top-0 z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border-b border-gray-200/50 dark:border-slate-800/50 px-6 py-4 shadow-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            {view === "tool" && (
-              <button 
-                onClick={handleBackToDashboard}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </button>
-            )}
+          <div className="flex items-center gap-2 sm:gap-4">
             <div 
               className="flex items-center gap-3 cursor-pointer group" 
               onClick={() => setView("landing")}
@@ -534,15 +561,112 @@ export default function App() {
               <img src="/logo.svg" alt="Nexus AI Logo" className="w-8 h-8 rounded-lg shadow-md shadow-primary/20 object-cover group-hover:scale-105 transition-transform duration-300" />
               <span className="font-bold tracking-tighter hidden sm:block dark:text-white group-hover:text-primary transition-colors duration-300">Nexus AI</span>
             </div>
-            {activeTool && (
-              <div className="hidden md:flex items-center gap-2 ml-4 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Active Tool:</span>
-                <span className="text-xs font-bold text-primary capitalize">{activeTool.replace("-", " ")}</span>
-              </div>
-            )}
+            
+            <div className="flex items-center gap-1 sm:gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+              <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600" />
+              <button 
+                onClick={handleBackToDashboard}
+                className={`hover:text-primary transition-colors flex items-center gap-1.5 ${view === "dashboard" ? "text-slate-800 dark:text-slate-200 font-semibold" : ""}`}
+              >
+                {view === "tool" && <ArrowLeft className="w-3 h-3 hidden sm:block" />}
+                Dashboard
+              </button>
+              
+              {view === "tool" && activeTool && (
+                <>
+                  <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600" />
+                  <span className="text-primary font-semibold capitalize flex items-center gap-2 bg-primary/10 px-2.5 py-1 rounded-md">
+                    {activeTool.replace("-", " ")}
+                  </span>
+                </>
+              )}
+              {view === "history" && (
+                <>
+                  <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600" />
+                  <span className="text-primary font-semibold capitalize flex items-center gap-2 bg-primary/10 px-2.5 py-1 rounded-md">
+                    History
+                  </span>
+                </>
+              )}
+              {view === "profile" && (
+                <>
+                  <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600" />
+                  <span className="text-primary font-semibold capitalize flex items-center gap-2 bg-primary/10 px-2.5 py-1 rounded-md">
+                    Profile
+                  </span>
+                </>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 sm:gap-6">
             <DarkModeToggle />
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="w-10 h-10 rounded-full border-2 border-slate-200 dark:border-slate-700 overflow-hidden hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+                >
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+                      <User className="w-5 h-5" />
+                    </div>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden z-50"
+                    >
+                      <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+                        <p className="font-medium text-slate-900 dark:text-white truncate">
+                          {profile?.full_name || user?.email}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1">
+                          {user?.email}
+                        </p>
+                      </div>
+                      <div className="p-2">
+                        <button
+                          onClick={() => {
+                            setView("profile");
+                            setIsProfileOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        >
+                          <Settings className="w-4 h-4" />
+                          Settings
+                        </button>
+                        <button
+                          onClick={async () => {
+                            setIsProfileOpen(false);
+                            await signOut();
+                            navigate("/auth");
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors mt-1"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <button
+                onClick={() => navigate("/auth")}
+                className="px-4 py-2 bg-primary text-white text-xs font-bold uppercase tracking-widest rounded-full hover:bg-primary-dark transition-all shadow-lg shadow-primary/25"
+              >
+                Sign In
+              </button>
+            )}
             <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               Engine Active
@@ -554,6 +678,10 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-6 py-12">
         {view === "dashboard" ? (
           <Dashboard onSelectTool={handleSelectTool} />
+        ) : view === "history" ? (
+          <HistoryPage />
+        ) : view === "profile" ? (
+          <ProfilePage />
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

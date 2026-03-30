@@ -1,13 +1,20 @@
-import React from "react";
-import { motion } from "motion/react";
-import { Sparkles, ArrowRight, Zap, Shield, Globe, Image as ImageIcon, CheckCircle2, Twitter, Linkedin, Instagram, Github, Mail, ExternalLink, FileText, Flame, Type, Video } from "lucide-react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Sparkles, ArrowRight, Zap, Shield, Globe, Image as ImageIcon, CheckCircle2, Twitter, Linkedin, Instagram, Github, Mail, ExternalLink, FileText, Flame, Type, Video, User, Settings, LogOut } from "lucide-react";
 import { DarkModeToggle } from "./DarkModeToggle";
+import { useAuthStore } from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 interface LandingPageProps {
   onStart: () => void;
+  onNavigate: (view: "landing" | "dashboard" | "tool" | "history" | "profile") => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigate }) => {
+  const { user, profile, signOut } = useAuthStore();
+  const navigate = useNavigate();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-hidden transition-colors duration-300">
       {/* Navigation */}
@@ -18,13 +25,82 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             <span className="text-xl font-bold tracking-tighter dark:text-white group-hover:text-primary transition-colors duration-300">Nexus AI</span>
           </div>
           <div className="flex items-center gap-6">
-            <DarkModeToggle />
             <button 
               onClick={onStart}
               className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold uppercase tracking-widest rounded-full hover:bg-primary-dark hover:scale-105 transition-all shadow-lg shadow-primary/25"
             >
               Launch App <ArrowRight className="w-4 h-4" />
             </button>
+
+            <DarkModeToggle />
+            
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="w-10 h-10 rounded-full border-2 border-slate-200 dark:border-slate-700 overflow-hidden hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+                >
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+                      <User className="w-5 h-5" />
+                    </div>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden z-50"
+                    >
+                      <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+                        <p className="font-medium text-slate-900 dark:text-white truncate">
+                          {profile?.full_name || user?.email}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1">
+                          {user?.email}
+                        </p>
+                      </div>
+                      <div className="p-2">
+                        <button
+                          onClick={() => {
+                            onNavigate("profile");
+                            setIsProfileOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                        >
+                          <Settings className="w-4 h-4" />
+                          Settings
+                        </button>
+                        <button
+                          onClick={async () => {
+                            setIsProfileOpen(false);
+                            await signOut();
+                            navigate("/auth");
+                          }}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors mt-1"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <button
+                onClick={() => navigate("/auth")}
+                className="px-5 py-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 text-foreground text-sm font-bold uppercase tracking-widest rounded-full hover:bg-gray-50 dark:hover:bg-slate-800 transition-all shadow-sm"
+              >
+                Sign In
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -99,6 +175,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
 
           {/* Visual Side */}
           <div className="relative lg:h-[700px] flex items-center justify-center">
+            
+            {/* Left Card (Video Analyzer) */}
+            <motion.div
+              initial={{ opacity: 0, x: 0, y: 0, rotate: -5 }}
+              animate={{ opacity: 1, x: -160, y: 40, rotate: -15 }}
+              transition={{ delay: 0.6, type: "spring", stiffness: 50 }}
+              className="hidden lg:block absolute z-0 w-64 aspect-[3/4] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10"
+            >
+              <img 
+                src="https://picsum.photos/seed/video-ai-analysis/600/800" 
+                alt="Video Analysis" 
+                className="w-full h-full object-cover opacity-50"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 space-y-3">
+                <div className="w-10 h-10 bg-blue-500/20 backdrop-blur-xl rounded-xl flex items-center justify-center">
+                  <Video className="w-5 h-5 text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white tracking-tight">Video AI</h3>
+                <p className="text-gray-400 text-xs leading-relaxed">Extract insights, summaries, and action items directly from video content.</p>
+              </div>
+            </motion.div>
+
+            {/* Main Center Card */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
@@ -118,6 +219,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
                 </div>
                 <h3 className="text-3xl font-bold text-white tracking-tight">The Nexus Hub</h3>
                 <p className="text-gray-400 text-sm">A unified dashboard designed for speed. Switch between summarization, generation, and analysis in milliseconds.</p>
+              </div>
+            </motion.div>
+
+            {/* Right Card (Social Studio) */}
+            <motion.div
+              initial={{ opacity: 0, x: 0, y: 0, rotate: -5 }}
+              animate={{ opacity: 1, x: 160, y: -40, rotate: 15 }}
+              transition={{ delay: 0.8, type: "spring", stiffness: 50 }}
+              className="hidden lg:block absolute z-0 w-64 aspect-[3/4] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10"
+            >
+              <img 
+                src="https://picsum.photos/seed/social-media-dashboard/600/800" 
+                alt="Social Studio" 
+                className="w-full h-full object-cover opacity-50"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 space-y-3">
+                <div className="w-10 h-10 bg-pink-500/20 backdrop-blur-xl rounded-xl flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5 text-pink-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white tracking-tight">Social Studio</h3>
+                <p className="text-gray-400 text-xs leading-relaxed">Generate platform-optimized content and stunning visuals in one click.</p>
               </div>
             </motion.div>
 

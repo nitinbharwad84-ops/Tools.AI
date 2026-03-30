@@ -4,10 +4,15 @@ import { Video, Loader2, AlertCircle, Copy, Check, Upload, FileVideo, PlayCircle
 import { analyzeVideo } from "../services/geminiService";
 import { useDropzone } from "react-dropzone";
 import { cn } from "../lib/utils";
+import { saveGenerationHistory } from "../services/historyService";
+import { useAuthStore } from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 type Tab = "summarization" | "qna" | "action" | "reasoning";
 
 export const VideoAnalyzerTool: React.FC = () => {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("summarization");
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoBase64, setVideoBase64] = useState<string | null>(null);
@@ -52,6 +57,10 @@ export const VideoAnalyzerTool: React.FC = () => {
   });
 
   const handleAnalyze = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     if (!videoBase64) {
       setError("Please upload a video first.");
       return;
@@ -77,6 +86,18 @@ export const VideoAnalyzerTool: React.FC = () => {
     try {
       const res = await analyzeVideo(videoBase64, mimeType, activeTab, prompt, options);
       setResult(res);
+      
+      if (user) {
+        await saveGenerationHistory(
+          user.id,
+          "video-analyzer",
+          `[${activeTab}] ${prompt || videoFile?.name || "Video upload"}`,
+          null,
+          { activeTab, ...options },
+          res,
+          "text"
+        );
+      }
     } catch (err: any) {
       setError(err.message || "Failed to analyze video.");
     } finally {

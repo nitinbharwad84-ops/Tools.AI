@@ -4,6 +4,9 @@ import { Image as ImageIcon, Loader2, AlertCircle, Download, Upload, Type, Spark
 import { generateImage, editImage, AspectRatio, ImageSize, ImageStyle, enhanceImagePrompt } from "../services/geminiService";
 import { useDropzone } from "react-dropzone";
 import { cn } from "../lib/utils";
+import { saveGenerationHistory } from "../services/historyService";
+import { useAuthStore } from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => (
   <div className="group relative flex flex-col items-center">
@@ -18,6 +21,8 @@ const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }
 );
 
 export const ImageGenTool: React.FC = () => {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<"generate" | "edit">("generate");
   const [prompt, setPrompt] = useState("");
   const [editPrompt, setEditPrompt] = useState("");
@@ -29,6 +34,7 @@ export const ImageGenTool: React.FC = () => {
   const [style, setStyle] = useState<ImageStyle>("photorealistic");
   const [isEnhancingPrompt, setIsEnhancingPrompt] = useState(false);
   const [isEnhancingEditPrompt, setIsEnhancingEditPrompt] = useState(false);
+  const [originalPrompt, setOriginalPrompt] = useState("");
 
   const onDrop = (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -48,6 +54,10 @@ export const ImageGenTool: React.FC = () => {
   });
 
   const handleGenerate = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     if (!prompt.trim()) {
       setError("Please enter a prompt.");
       return;
@@ -60,6 +70,18 @@ export const ImageGenTool: React.FC = () => {
     try {
       const result = await generateImage(prompt, aspectRatio, "1K", style);
       setResultImage(result);
+      
+      if (user) {
+        await saveGenerationHistory(
+          user.id,
+          "image-gen",
+          originalPrompt || prompt,
+          originalPrompt ? prompt : null,
+          { aspectRatio, style, mode: "generate" },
+          result,
+          "image"
+        );
+      }
     } catch (err: any) {
       setError(err.message || "Failed to generate image.");
     } finally {
@@ -68,6 +90,10 @@ export const ImageGenTool: React.FC = () => {
   };
 
   const handleEdit = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     if (!baseImage) {
       setError("Please upload a base image.");
       return;
@@ -84,6 +110,18 @@ export const ImageGenTool: React.FC = () => {
     try {
       const result = await editImage(baseImage, editPrompt, aspectRatio);
       setResultImage(result);
+      
+      if (user) {
+        await saveGenerationHistory(
+          user.id,
+          "image-gen",
+          originalPrompt || editPrompt,
+          originalPrompt ? editPrompt : null,
+          { aspectRatio, mode: "edit" },
+          result,
+          "image"
+        );
+      }
     } catch (err: any) {
       setError(err.message || "Failed to edit image.");
     } finally {
@@ -94,6 +132,7 @@ export const ImageGenTool: React.FC = () => {
   const handleEnhanceMainPrompt = async () => {
     if (!prompt.trim()) return;
     setIsEnhancingPrompt(true);
+    setOriginalPrompt(prompt);
     try {
       const enhanced = await enhanceImagePrompt(prompt);
       setPrompt(enhanced);
@@ -107,6 +146,7 @@ export const ImageGenTool: React.FC = () => {
   const handleEnhanceEditPrompt = async () => {
     if (!editPrompt.trim()) return;
     setIsEnhancingEditPrompt(true);
+    setOriginalPrompt(editPrompt);
     try {
       const enhanced = await enhanceImagePrompt(editPrompt);
       setEditPrompt(enhanced);

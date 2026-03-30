@@ -3,8 +3,13 @@ import { motion } from "motion/react";
 import { Type, Loader2, AlertCircle, Copy, Check } from "lucide-react";
 import { fixGrammar, WritingStyle, Dialect } from "../services/geminiService";
 import { cn } from "../lib/utils";
+import { saveGenerationHistory } from "../services/historyService";
+import { useAuthStore } from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 export const GrammarFixerTool: React.FC = () => {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [fixed, setFixed] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,6 +19,10 @@ export const GrammarFixerTool: React.FC = () => {
   const [dialect, setDialect] = useState<Dialect>("US");
 
   const handleFix = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     if (!input.trim()) {
       setError("Please enter some text to fix.");
       return;
@@ -26,6 +35,18 @@ export const GrammarFixerTool: React.FC = () => {
     try {
       const result = await fixGrammar(input, style, dialect);
       setFixed(result);
+      
+      if (user) {
+        await saveGenerationHistory(
+          user.id,
+          "grammar-fixer",
+          input,
+          null,
+          { style, dialect },
+          result,
+          "text"
+        );
+      }
     } catch (err: any) {
       setError(err.message || "Failed to fix grammar.");
     } finally {

@@ -3,8 +3,13 @@ import { motion } from "motion/react";
 import { Mail, Loader2, AlertCircle, Copy, Check } from "lucide-react";
 import { pacifyEmail, EmailTone, ContentLength } from "../services/geminiService";
 import { cn } from "../lib/utils";
+import { saveGenerationHistory } from "../services/historyService";
+import { useAuthStore } from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 export const EmailPacifierTool: React.FC = () => {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [pacified, setPacified] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,6 +19,10 @@ export const EmailPacifierTool: React.FC = () => {
   const [length, setLength] = useState<ContentLength>("medium");
 
   const handlePacify = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     if (!input.trim()) {
       setError("Please enter the angry email text.");
       return;
@@ -26,6 +35,18 @@ export const EmailPacifierTool: React.FC = () => {
     try {
       const result = await pacifyEmail(input, tone, length);
       setPacified(result);
+      
+      if (user) {
+        await saveGenerationHistory(
+          user.id,
+          "email-pacifier",
+          input,
+          null,
+          { tone, length },
+          result,
+          "text"
+        );
+      }
     } catch (err: any) {
       setError(err.message || "Failed to pacify email.");
     } finally {
