@@ -5,6 +5,7 @@ import { supabase } from "../services/supabaseClient";
 import { useAuthStore } from "../stores/authStore";
 import { Loader2, Download, Clock, Type, Image as ImageIcon, FileText, Mail, Flame, Video, Trash2, AlertCircle } from "lucide-react";
 import { GenerationHistory } from "../types/supabase";
+import { ConfirmModal } from "../components/ConfirmModal";
 
 const fetchHistory = async ({ pageParam = 0, userId }: { pageParam: number, userId: string }) => {
   const limit = 10;
@@ -34,6 +35,8 @@ const getToolIcon = (toolName: string) => {
 export const HistoryPage: React.FC = () => {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
+  const [isClearAllOpen, setIsClearAllOpen] = React.useState(false);
 
   const {
     data,
@@ -123,11 +126,7 @@ export const HistoryPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Generation History</h1>
         {!isEmpty && (
           <button
-            onClick={() => {
-              if (window.confirm("Are you sure you want to clear your entire history?")) {
-                clearAllMutation.mutate();
-              }
-            }}
+            onClick={() => setIsClearAllOpen(true)}
             disabled={clearAllMutation.isPending}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors disabled:opacity-50"
           >
@@ -136,6 +135,26 @@ export const HistoryPage: React.FC = () => {
           </button>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={isClearAllOpen}
+        onClose={() => setIsClearAllOpen(false)}
+        onConfirm={() => clearAllMutation.mutate()}
+        title="Clear All History"
+        message="Are you sure you want to delete your entire generation history? This action cannot be undone."
+        confirmText="Clear All"
+        variant="danger"
+      />
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
+        title="Delete History Item"
+        message="Are you sure you want to delete this item from your history?"
+        confirmText="Delete"
+        variant="danger"
+      />
 
       <div className="space-y-6">
         {data.pages.map((page, i) => (
@@ -170,13 +189,9 @@ export const HistoryPage: React.FC = () => {
                       <Download className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => {
-                        if (window.confirm("Delete this item from history?")) {
-                          deleteMutation.mutate(item.id);
-                        }
-                      }}
+                      onClick={() => setDeleteId(item.id)}
                       disabled={deleteMutation.isPending}
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-100 focus:opacity-100"
                       title="Delete Item"
                     >
                       <Trash2 className="w-5 h-5" />

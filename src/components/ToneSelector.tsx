@@ -17,7 +17,6 @@ const tones: { value: Tone; label: string; description: string }[] = [
 export const ToneSelector: React.FC<ToneSelectorProps> = ({ selectedTone, onSelect, disabled }) => {
   return (
     <div className="flex flex-col gap-3">
-      <label className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">Tone of Voice</label>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {tones.map((tone) => (
           <button

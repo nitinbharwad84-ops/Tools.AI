@@ -20,7 +20,6 @@ const audiences: { value: TargetAudience; label: string; description: string; ic
 export const TargetAudienceSelector: React.FC<TargetAudienceSelectorProps> = ({ selectedAudience, onSelect, disabled }) => {
   return (
     <div className="flex flex-col gap-3">
-      <label className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">Target Audience</label>
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
         {audiences.map((audience) => (
           <button

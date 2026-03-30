@@ -222,21 +222,19 @@ export const SocialGenTool: React.FC = () => {
             />
           </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <section className="space-y-4">
-              <label className="block text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                Writing Tone
-              </label>
-              <ToneSelector selectedTone={tone} onSelect={setTone} />
-            </section>
+          <section className="space-y-4">
+            <label className="block text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+              Writing Tone
+            </label>
+            <ToneSelector selectedTone={tone} onSelect={setTone} />
+          </section>
 
-            <section className="space-y-4">
-              <label className="block text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                Target Audience
-              </label>
-              <TargetAudienceSelector selectedAudience={targetAudience} onSelect={setTargetAudience} />
-            </section>
-          </div>
+          <section className="space-y-4">
+            <label className="block text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+              Target Audience
+            </label>
+            <TargetAudienceSelector selectedAudience={targetAudience} onSelect={setTargetAudience} />
+          </section>
 
           <section className="space-y-4">
             <label className="block text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
