@@ -20,23 +20,56 @@ async function startServer() {
       return res.status(400).json({ error: "URL is required" });
     }
 
+    const fetchWithRetry = async (url: string, retries = 2): Promise<any> => {
+      try {
+        return await axios.get(url, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "Cache-Control": "max-age=0"
+          },
+          timeout: 15000,
+          maxRedirects: 5,
+          validateStatus: (status) => status >= 200 && status < 300
+        });
+      } catch (error: any) {
+        if (retries > 0 && (error.code === 'ECONNRESET' || error.message.includes('socket hang up') || error.code === 'ETIMEDOUT')) {
+          console.log(`Retrying fetch for ${url}. Retries left: ${retries}`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return fetchWithRetry(url, retries - 1);
+        }
+        throw error;
+      }
+    };
+
     try {
-      const response = await axios.get(url, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        },
-        timeout: 10000
-      });
+      const response = await fetchWithRetry(url);
       const $ = cheerio.load(response.data);
       
       // Remove scripts, styles, etc.
-      $("script, style, nav, footer, header, noscript").remove();
+      $("script, style, nav, footer, header, noscript, iframe, ads").remove();
       
       const text = $("body").text().replace(/\s+/g, " ").trim();
-      res.json({ text: text.substring(0, 10000) }); // Limit text length
+      
+      if (!text || text.length < 50) {
+        // Fallback if body text is too short, maybe content is in a specific div
+        const mainContent = $("main, article, #content, .content, .post-content").text().replace(/\s+/g, " ").trim();
+        if (mainContent.length > text.length) {
+          return res.json({ text: mainContent.substring(0, 15000) });
+        }
+      }
+
+      res.json({ text: text.substring(0, 15000) }); // Limit text length
     } catch (error: any) {
-      console.error("Error fetching URL:", error.message);
-      res.status(500).json({ error: "Failed to fetch URL content. Make sure the URL is valid and accessible." });
+      console.error("Error fetching URL:", error.message, error.code);
+      const message = error.code === 'ECONNRESET' || error.message.includes('socket hang up')
+        ? "The server closed the connection unexpectedly. This often happens with sites that block automated access."
+        : "Failed to fetch URL content. Make sure the URL is valid and accessible.";
+      res.status(500).json({ error: message });
     }
   });
 

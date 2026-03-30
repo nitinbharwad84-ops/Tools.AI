@@ -85,8 +85,13 @@ export const SummarizerTool: React.FC = () => {
         contentToSummarize = input;
       } else if (mode === "url") {
         if (!url.trim()) throw new Error("Please enter a valid URL.");
-        const response = await axios.post("/api/fetch-url", { url });
-        contentToSummarize = response.data.text;
+        try {
+          const response = await axios.post("/api/fetch-url", { url });
+          contentToSummarize = response.data.text;
+        } catch (err: any) {
+          const backendError = err.response?.data?.error;
+          throw new Error(backendError || "Failed to fetch content from the provided URL.");
+        }
       } else if (mode === "file") {
         if (!file) throw new Error("Please upload a file.");
         
