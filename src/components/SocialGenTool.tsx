@@ -187,8 +187,10 @@ export const SocialGenTool: React.FC = () => {
           <ArrowLeft className="w-6 h-6" />
         </button>
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Social Gen AI</h1>
-          <p className="text-slate-500 dark:text-slate-400">Generate viral social media posts with AI visuals.</p>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">AI Viral Social Media Generator</h1>
+          <p className="text-slate-500 dark:text-slate-400 max-w-2xl">
+            Transform your ideas into high-engagement social media posts across multiple platforms, complete with AI-generated visuals.
+          </p>
         </div>
       </div>
 

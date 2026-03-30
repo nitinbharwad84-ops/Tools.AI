@@ -121,8 +121,8 @@ export const LandingPage: React.FC = () => {
               transition={{ delay: 0.1 }}
               className="text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] text-foreground"
             >
-              Your Unified<br />
-              <span className="text-primary italic font-serif font-light">AI Workspace.</span>
+              Nexus AI:<br />
+              <span className="text-primary italic font-serif font-light">The Ultimate AI Suite.</span>
             </motion.h1>
 
             <motion.p 
@@ -131,7 +131,7 @@ export const LandingPage: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="text-xl text-gray-500 dark:text-gray-400 max-w-lg leading-relaxed"
             >
-              Replace your scattered AI tools with one seamless platform. Nexus AI brings the world's most powerful text, image, and video models together so you can create faster and work smarter.
+              From viral social media generation and resume roasting to advanced video analysis and image creation. Nexus AI consolidates the world's most powerful AI models into one seamless, high-performance workspace.
             </motion.p>
 
             <motion.div 

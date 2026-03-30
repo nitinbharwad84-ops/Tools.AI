@@ -82,12 +82,12 @@ export const Dashboard: React.FC<DashboardProps> = () => {
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       <div className="mb-12">
-        <h2 className="text-4xl font-bold tracking-tight text-foreground mb-4">
-          Welcome to <span className="text-primary italic font-serif">Nexus AI</span>
-        </h2>
-        <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl">
-          Select a tool below to start generating high-quality AI content. 
-          Everything you need in one powerful platform.
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-6">
+          Unleash the Power of <span className="text-primary italic font-serif">Nexus AI</span>
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 text-lg sm:text-xl max-w-3xl leading-relaxed">
+          The ultimate multi-tool platform for creators and professionals. Generate viral content, 
+          summarize complex documents, and analyze media with state-of-the-art Gemini 3.1 Pro intelligence.
         </p>
       </div>
 

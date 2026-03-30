@@ -169,6 +169,13 @@ export const ImageGenTool: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="mb-12 text-center">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">AI Image Studio</h1>
+        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+          Create stunning visuals from text prompts or transform existing images with advanced AI editing capabilities.
+        </p>
+      </div>
+
       <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-gray-100 dark:border-slate-800 p-8 shadow-sm">
         <div className="flex flex-wrap gap-4 mb-8">
           {[
